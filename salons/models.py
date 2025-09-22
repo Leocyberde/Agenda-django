@@ -13,17 +13,9 @@ class Salon(models.Model):
     email = models.EmailField(verbose_name="Email")
     owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name='salon', verbose_name="Proprietário")
     
-    # Horários de funcionamento
-    monday_open = models.TimeField(blank=True, null=True, verbose_name="Segunda - Abertura")
-    monday_close = models.TimeField(blank=True, null=True, verbose_name="Segunda - Fechamento")
-    tuesday_open = models.TimeField(blank=True, null=True, verbose_name="Terça - Abertura")
-    tuesday_close = models.TimeField(blank=True, null=True, verbose_name="Terça - Fechamento")
-    wednesday_open = models.TimeField(blank=True, null=True, verbose_name="Quarta - Abertura")
-    wednesday_close = models.TimeField(blank=True, null=True, verbose_name="Quarta - Fechamento")
-    thursday_open = models.TimeField(blank=True, null=True, verbose_name="Quinta - Abertura")
-    thursday_close = models.TimeField(blank=True, null=True, verbose_name="Quinta - Fechamento")
-    friday_open = models.TimeField(blank=True, null=True, verbose_name="Sexta - Abertura")
-    friday_close = models.TimeField(blank=True, null=True, verbose_name="Sexta - Fechamento")
+    # Horários de funcionamento simplificados
+    weekdays_open = models.TimeField(blank=True, null=True, verbose_name="Segunda à Sexta - Abertura")
+    weekdays_close = models.TimeField(blank=True, null=True, verbose_name="Segunda à Sexta - Fechamento")
     saturday_open = models.TimeField(blank=True, null=True, verbose_name="Sábado - Abertura")
     saturday_close = models.TimeField(blank=True, null=True, verbose_name="Sábado - Fechamento")
     sunday_open = models.TimeField(blank=True, null=True, verbose_name="Domingo - Abertura")
@@ -37,12 +29,12 @@ class Salon(models.Model):
     
     def get_working_hours(self, day_of_week):
         """Retorna horário de funcionamento para um dia específico (0=segunda, 6=domingo)"""
-        days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-        if 0 <= day_of_week <= 6:
-            day_name = days[day_of_week]
-            open_time = getattr(self, f"{day_name}_open")
-            close_time = getattr(self, f"{day_name}_close")
-            return open_time, close_time
+        if 0 <= day_of_week <= 4:  # Segunda a sexta (0-4)
+            return self.weekdays_open, self.weekdays_close
+        elif day_of_week == 5:  # Sábado (5)
+            return self.saturday_open, self.saturday_close
+        elif day_of_week == 6:  # Domingo (6)
+            return self.sunday_open, self.sunday_close
         return None, None
     
     class Meta:

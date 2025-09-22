@@ -16,17 +16,9 @@ class SalonForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             
-            # Horários
-            'monday_open': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'monday_close': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'tuesday_open': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'tuesday_close': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'wednesday_open': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'wednesday_close': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'thursday_open': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'thursday_close': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'friday_open': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'friday_close': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            # Horários simplificados
+            'weekdays_open': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'weekdays_close': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
             'saturday_open': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
             'saturday_close': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
             'sunday_open': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
