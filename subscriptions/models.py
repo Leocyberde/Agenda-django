@@ -26,10 +26,13 @@ class Subscription(models.Model):
     def save(self, *args, **kwargs):
         """Define a data de término baseada no tipo de plano"""
         if not self.end_date:
+            # Se start_date ainda não foi definido (primeira criação), usar agora
+            start_time = self.start_date if self.start_date else timezone.now()
+            
             if self.plan_type == 'trial_10':
-                self.end_date = self.start_date + timedelta(days=10)
+                self.end_date = start_time + timedelta(days=10)
             elif self.plan_type == 'vip_30':
-                self.end_date = self.start_date + timedelta(days=30)
+                self.end_date = start_time + timedelta(days=30)
         super().save(*args, **kwargs)
     
     def is_active(self):

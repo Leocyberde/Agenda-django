@@ -152,6 +152,12 @@
             background: linear-gradient(135deg, #f8d7da, white);
             border-left: 4px solid #dc3545;
         }
+        
+        .sidebar .nav-link.text-danger:hover {
+            background-color: #dc3545;
+            color: white !important;
+            transform: translateX(5px);
+        }
     </style>
 </head>
 <body>
@@ -227,6 +233,10 @@
                             </a>
                             <a class="nav-link" href="{% url 'subscriptions:detail' %}">
                                 <i class="fas fa-crown me-2"></i>Assinatura
+                            </a>
+                            <hr class="my-3 mx-3" style="border-color: #dee2e6;">
+                            <a class="nav-link text-danger" href="{% url 'accounts:logout' %}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Sair do Sistema
                             </a>
                         </nav>
                     </div>

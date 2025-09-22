@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse_lazy
@@ -51,6 +51,10 @@ def profile_view(request):
 @login_required
 def dashboard_view(request):
     """Dashboard principal que redireciona baseado no tipo de usuário"""
+    # Verificar se é administrador (superusuário)
+    if request.user.is_superuser:
+        return redirect('admin_panel:dashboard')
+    
     profile = request.user.profile
     
     if profile.user_type == 'owner':
@@ -74,3 +78,9 @@ def subscription_status(request):
     return render(request, 'accounts/subscription_status.html', {
         'subscription': subscription
     })
+
+def logout_view(request):
+    """Custom logout view that accepts GET requests"""
+    logout(request)
+    messages.success(request, 'Você saiu do sistema com sucesso!')
+    return redirect('core:landing_page')
