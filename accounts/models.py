@@ -6,6 +6,7 @@ from django.dispatch import receiver
 class UserProfile(models.Model):
     USER_TYPES = (
         ('owner', 'Proprietário'),
+        ('employee', 'Funcionário'),
         ('client', 'Cliente'),
     )
     
@@ -13,7 +14,9 @@ class UserProfile(models.Model):
     user_type = models.CharField(max_length=10, choices=USER_TYPES, default='client')
     phone = models.CharField(max_length=15, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    # Temporarily using URLField instead of ImageField due to Pillow compatibility issues in Replit
+    # profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_picture = models.URLField(max_length=500, blank=True, null=True, help_text="URL do avatar/foto de perfil")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

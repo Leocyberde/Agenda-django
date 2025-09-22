@@ -170,6 +170,10 @@ def manage_subscription(request, owner_id):
             subscription.save()
             messages.success(request, 'Assinatura ativada!')
         
+        elif action == 'fix_to_vip':
+            subscription.renew_subscription('vip_30')
+            messages.success(request, 'Assinatura corrigida para VIP 30 dias!')
+        
         return redirect('admin_panel:owner_detail', owner_id=owner.id)
     
     return render(request, 'admin_panel/manage_subscription.html', {

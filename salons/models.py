@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import secrets
 
 class Salon(models.Model):
     name = models.CharField(max_length=100, verbose_name="Nome do Salão")
@@ -65,3 +66,42 @@ class Service(models.Model):
         verbose_name = "Serviço"
         verbose_name_plural = "Serviços"
         ordering = ['name']
+
+class Employee(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee_profile', verbose_name="Usuário")
+    salon = models.ForeignKey(Salon, on_delete=models.CASCADE, related_name='employees', verbose_name="Salão")
+    services = models.ManyToManyField(Service, blank=True, verbose_name="Serviços que pode executar")
+    is_active = models.BooleanField(default=True, verbose_name="Ativo")
+    hire_date = models.DateField(auto_now_add=True, verbose_name="Data de contratação")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name} - {self.salon.name}"
+    
+    class Meta:
+        verbose_name = "Funcionário"
+        verbose_name_plural = "Funcionários"
+        unique_together = ['user', 'salon']
+
+class BookingToken(models.Model):
+    salon = models.OneToOneField(Salon, on_delete=models.CASCADE, related_name='booking_token', verbose_name="Salão")
+    token = models.CharField(max_length=32, unique=True, verbose_name="Token de agendamento")
+    is_active = models.BooleanField(default=True, verbose_name="Ativo")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = secrets.token_urlsafe(16)[:32]
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"Token de agendamento - {self.salon.name}"
+    
+    def get_booking_url(self):
+        from django.urls import reverse
+        return reverse('salons:public_booking', kwargs={'token': self.token})
+    
+    class Meta:
+        verbose_name = "Token de Agendamento"
+        verbose_name_plural = "Tokens de Agendamento"

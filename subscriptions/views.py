@@ -11,9 +11,14 @@ def subscription_detail(request):
         messages.error(request, 'Acesso negado. Apenas proprietários podem acessar esta página.')
         return redirect('accounts:dashboard')
     
+    # Verificar se há um plano especificado na URL (para novos usuários)
+    plan_from_url = request.GET.get('plan', 'trial_10')
+    if plan_from_url == 'vip':
+        plan_from_url = 'vip_30'
+    
     subscription, created = Subscription.objects.get_or_create(
         user=request.user,
-        defaults={'plan_type': 'trial_10'}
+        defaults={'plan_type': plan_from_url}
     )
     
     # Verificar se a assinatura expirou

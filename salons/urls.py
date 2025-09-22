@@ -17,5 +17,22 @@ urlpatterns = [
     
     # Agendamentos
     path('appointments/', views.appointments_list, name='appointments_list'),
+    
+    # Funcionários - Gerenciamento pelo proprietário
+    path('employees/', views.employees_list, name='employees_list'),
+    path('employees/create/', views.create_employee, name='create_employee'),
+    path('employees/<int:employee_id>/edit/', views.edit_employee, name='edit_employee'),
+    path('employees/<int:employee_id>/delete/', views.delete_employee, name='delete_employee'),
+    
+    # Painel do funcionário
+    path('employee/dashboard/', views.employee_dashboard, name='employee_dashboard'),
+    path('employee/appointments/', views.employee_appointments, name='employee_appointments'),
+    
+    # Links de agendamento
+    path('booking-link/generate/', views.generate_booking_link, name='generate_booking_link'),
+    path('booking-link/toggle/', views.toggle_booking_link, name='toggle_booking_link'),
+    
+    # Agendamento público
+    path('book/<str:token>/', views.public_booking, name='public_booking'),
 ]
 

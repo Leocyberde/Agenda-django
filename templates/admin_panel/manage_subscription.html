@@ -120,6 +120,21 @@
                     </form>
                 </div>
 
+                <!-- Correção Rápida -->
+                {% if subscription and subscription.plan_type == 'trial_10' %}
+                <div class="mb-4">
+                    <h6 class="text-warning">Correção Rápida</h6>
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="fix_to_vip">
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-magic me-2"></i>Corrigir para VIP 30 dias
+                        </button>
+                    </form>
+                    <small class="text-muted">Use esta opção se o usuário se registrou para VIP mas recebeu trial</small>
+                </div>
+                {% endif %}
+
                 <!-- Controle de Status -->
                 <div class="mb-0">
                     <h6 class="text-secondary">Controle de Status</h6>

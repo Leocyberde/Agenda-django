@@ -15,6 +15,7 @@ class Appointment(models.Model):
     client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments', verbose_name="Cliente")
     salon = models.ForeignKey(Salon, on_delete=models.CASCADE, related_name='appointments', verbose_name="Salão")
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='appointments', verbose_name="Serviço")
+    employee = models.ForeignKey('salons.Employee', on_delete=models.SET_NULL, null=True, blank=True, related_name='appointments', verbose_name="Funcionário responsável")
     appointment_date = models.DateField(verbose_name="Data do Agendamento")
     appointment_time = models.TimeField(verbose_name="Horário do Agendamento")
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='scheduled', verbose_name="Status")
@@ -44,4 +45,15 @@ class Appointment(models.Model):
         verbose_name = "Agendamento"
         verbose_name_plural = "Agendamentos"
         ordering = ['appointment_date', 'appointment_time']
-        unique_together = ['salon', 'appointment_date', 'appointment_time']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['salon', 'employee', 'appointment_date', 'appointment_time'],
+                condition=models.Q(employee__isnull=False),
+                name='unique_employee_appointment_time'
+            ),
+            models.UniqueConstraint(
+                fields=['salon', 'appointment_date', 'appointment_time'],
+                condition=models.Q(employee__isnull=True),
+                name='unique_salon_appointment_time_no_employee'
+            )
+        ]
