@@ -26,7 +26,7 @@ def create_salon(request):
         return redirect('salons:owner_dashboard')
 
     if request.method == 'POST':
-        form = SalonForm(request.POST)
+        form = SalonForm(request.POST, request.FILES)
         if form.is_valid():
             salon = form.save(commit=False)
             salon.owner = request.user
@@ -88,7 +88,7 @@ def edit_salon(request):
     salon = request.user.salon
 
     if request.method == 'POST':
-        form = SalonForm(request.POST, instance=salon)
+        form = SalonForm(request.POST, request.FILES, instance=salon)
         if form.is_valid():
             form.save()
             messages.success(request, 'Salão atualizado com sucesso!')

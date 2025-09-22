@@ -224,10 +224,24 @@
                 </h6>
             </div>
             <div class="card-body">
-                <p class="mb-2"><strong>Nome:</strong> {{ salon.name }}</p>
-                <p class="mb-2"><strong>Cidade:</strong> {{ salon.city }}, {{ salon.state }}</p>
-                <p class="mb-2"><strong>Telefone:</strong> {{ salon.phone }}</p>
-                <p class="mb-0"><strong>Email:</strong> {{ salon.email }}</p>
+                {% if salon.photo %}
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p class="mb-2"><strong>Nome:</strong> {{ salon.name }}</p>
+                            <p class="mb-2"><strong>Cidade:</strong> {{ salon.city }}, {{ salon.state }}</p>
+                            <p class="mb-2"><strong>Telefone:</strong> {{ salon.phone }}</p>
+                            <p class="mb-0"><strong>Email:</strong> {{ salon.email }}</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <img src="{{ salon.photo.url }}" alt="{{ salon.name }}" class="img-fluid rounded" style="max-height: 120px;">
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="mb-2"><strong>Nome:</strong> {{ salon.name }}</p>
+                    <p class="mb-2"><strong>Cidade:</strong> {{ salon.city }}, {{ salon.state }}</p>
+                    <p class="mb-2"><strong>Telefone:</strong> {{ salon.phone }}</p>
+                    <p class="mb-0"><strong>Email:</strong> {{ salon.email }}</p>
+                {% endif %}
             </div>
         </div>
     </div>
