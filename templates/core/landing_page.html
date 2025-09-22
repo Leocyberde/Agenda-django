@@ -1,0 +1,362 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Sistema de Agendamento para Salões e Barbearias{% endblock %}
+
+{% block content %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #3498db, #85c1e9);
+        color: white;
+        padding: 80px 0;
+        margin: -30px -30px 30px -30px;
+        text-align: center;
+    }
+    
+    .feature-card {
+        transition: transform 0.3s;
+        height: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .pricing-card {
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+    
+    .pricing-card:hover {
+        border-color: #3498db;
+        transform: translateY(-5px);
+    }
+    
+    .pricing-card.featured {
+        border-color: #3498db;
+        transform: scale(1.05);
+    }
+    
+    .btn-cta {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 50px;
+        transition: all 0.3s;
+    }
+    
+    .btn-cta:hover {
+        background: linear-gradient(135deg, #20c997, #28a745);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    }
+    
+    .stats-section {
+        background: #f8f9fa;
+        padding: 60px 0;
+        margin: 60px -30px;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-cut me-3"></i>
+                    Sistema de Agendamento Profissional
+                </h1>
+                <p class="lead mb-5">
+                    Transforme seu salão ou barbearia com nossa plataforma completa de agendamentos online. 
+                    Gerencie clientes, serviços e horários de forma simples e eficiente.
+                </p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="#planos" class="btn btn-cta btn-success btn-lg">
+                        <i class="fas fa-rocket me-2"></i>Começar Agora
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Já tenho conta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold text-primary">Por que escolher nosso sistema?</h2>
+            <p class="lead text-muted">Recursos pensados especialmente para salões e barbearias</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card feature-card h-100 border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h5 class="card-title">Agendamentos Online</h5>
+                    <p class="card-text">
+                        Seus clientes podem agendar serviços 24/7 através de uma interface simples e intuitiva.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card feature-card h-100 border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h5 class="card-title">Gestão de Clientes</h5>
+                    <p class="card-text">
+                        Mantenha um cadastro completo dos seus clientes com histórico de serviços e preferências.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card feature-card h-100 border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5 class="card-title">Relatórios e Estatísticas</h5>
+                    <p class="card-text">
+                        Acompanhe o desempenho do seu negócio com relatórios detalhados e estatísticas em tempo real.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card feature-card h-100 border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h5 class="card-title">100% Responsivo</h5>
+                    <p class="card-text">
+                        Acesse de qualquer dispositivo - computador, tablet ou smartphone com total facilidade.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card feature-card h-100 border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h5 class="card-title">Horários Flexíveis</h5>
+                    <p class="card-text">
+                        Configure seus horários de funcionamento e disponibilidade de forma personalizada.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card feature-card h-100 border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h5 class="card-title">Seguro e Confiável</h5>
+                    <p class="card-text">
+                        Seus dados e de seus clientes estão protegidos com a mais alta segurança.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="display-4 fw-bold text-primary">10+</div>
+                <p class="lead">Dias de Teste Grátis</p>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="display-4 fw-bold text-primary">24/7</div>
+                <p class="lead">Disponibilidade</p>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="display-4 fw-bold text-primary">100%</div>
+                <p class="lead">Responsivo</p>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="display-4 fw-bold text-primary">∞</div>
+                <p class="lead">Agendamentos</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Section -->
+<div class="container my-5" id="planos">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold text-primary">Escolha seu plano</h2>
+            <p class="lead text-muted">Comece gratuitamente e evolua conforme sua necessidade</p>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center g-4">
+        <!-- Plano Teste -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card pricing-card h-100">
+                <div class="card-header bg-light text-center py-4">
+                    <h4 class="card-title text-primary">
+                        <i class="fas fa-gift me-2"></i>Teste Grátis
+                    </h4>
+                    <div class="display-4 fw-bold text-dark">R$ 0</div>
+                    <small class="text-muted">por 10 dias</small>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Agendamentos ilimitados
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Gestão de clientes
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Cadastro de serviços
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Suporte por email
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-muted me-2"></i>
+                            Relatórios avançados
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-transparent p-4">
+                    <a href="{% url 'accounts:register' %}?plan=trial" class="btn btn-outline-primary btn-lg w-100">
+                        <i class="fas fa-play me-2"></i>Começar Teste
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Plano VIP -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card pricing-card featured h-100 shadow-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h4 class="card-title">
+                        <i class="fas fa-crown me-2"></i>Plano VIP
+                    </h4>
+                    <div class="display-4 fw-bold">R$ 29</div>
+                    <small>por 30 dias</small>
+                    <div class="badge bg-warning text-dark mt-2">MAIS POPULAR</div>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Tudo do plano teste +</strong>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Relatórios avançados
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Estatísticas detalhadas
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Suporte prioritário
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Backup automático
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-transparent p-4">
+                    <a href="{% url 'accounts:register' %}?plan=vip" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-crown me-2"></i>Assinar VIP
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center py-5">
+                    <h3 class="card-title display-6 fw-bold mb-4">
+                        Pronto para revolucionar seu salão?
+                    </h3>
+                    <p class="lead mb-4">
+                        Junte-se a centenas de profissionais que já transformaram seus negócios
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{% url 'accounts:register' %}?plan=trial" class="btn btn-light btn-lg">
+                            <i class="fas fa-gift me-2"></i>Teste 10 Dias Grátis
+                        </a>
+                        <a href="{% url 'accounts:register' %}?plan=vip" class="btn btn-warning btn-lg">
+                            <i class="fas fa-crown me-2"></i>Assinar Plano VIP
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4 mt-5" style="margin: 60px -30px -30px -30px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5><i class="fas fa-cut me-2"></i>Sistema de Agendamento</h5>
+                <p class="mb-0">A solução completa para seu salão ou barbearia.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p class="mb-0">
+                    <a href="{% url 'accounts:login' %}" class="text-white text-decoration-none">
+                        <i class="fas fa-sign-in-alt me-1"></i>Já tenho conta
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Smooth scroll para âncoras
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+{% endblock %}
+

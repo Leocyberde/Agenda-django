@@ -1,0 +1,200 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Criar Salão - Sistema de Agendamento{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-store me-2"></i>Criar Meu Salão
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    Configure as informações do seu salão para começar a receber agendamentos.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Informações Básicas -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Informações Básicas
+                            </h5>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">{{ form.phone.label }}</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+
+                    <!-- Endereço -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-map-marker-alt me-2"></i>Endereço
+                            </h5>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.address.id_for_label }}" class="form-label">{{ form.address.label }}</label>
+                            {{ form.address }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.city.id_for_label }}" class="form-label">{{ form.city.label }}</label>
+                            {{ form.city }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="{{ form.state.id_for_label }}" class="form-label">{{ form.state.label }}</label>
+                            {{ form.state }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="{{ form.zip_code.id_for_label }}" class="form-label">{{ form.zip_code.label }}</label>
+                            {{ form.zip_code }}
+                        </div>
+                    </div>
+
+                    <!-- Horários de Funcionamento -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-clock me-2"></i>Horários de Funcionamento
+                            </h5>
+                            <p class="text-muted small mb-3">
+                                Deixe em branco os dias que não funciona
+                            </p>
+                        </div>
+                        
+                        <!-- Segunda -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Segunda-feira</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="{{ form.monday_open.id_for_label }}" class="form-label small">Abertura</label>
+                                    {{ form.monday_open }}
+                                </div>
+                                <div class="col-6">
+                                    <label for="{{ form.monday_close.id_for_label }}" class="form-label small">Fechamento</label>
+                                    {{ form.monday_close }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Terça -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Terça-feira</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="{{ form.tuesday_open.id_for_label }}" class="form-label small">Abertura</label>
+                                    {{ form.tuesday_open }}
+                                </div>
+                                <div class="col-6">
+                                    <label for="{{ form.tuesday_close.id_for_label }}" class="form-label small">Fechamento</label>
+                                    {{ form.tuesday_close }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quarta -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Quarta-feira</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="{{ form.wednesday_open.id_for_label }}" class="form-label small">Abertura</label>
+                                    {{ form.wednesday_open }}
+                                </div>
+                                <div class="col-6">
+                                    <label for="{{ form.wednesday_close.id_for_label }}" class="form-label small">Fechamento</label>
+                                    {{ form.wednesday_close }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quinta -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Quinta-feira</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="{{ form.thursday_open.id_for_label }}" class="form-label small">Abertura</label>
+                                    {{ form.thursday_open }}
+                                </div>
+                                <div class="col-6">
+                                    <label for="{{ form.thursday_close.id_for_label }}" class="form-label small">Fechamento</label>
+                                    {{ form.thursday_close }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sexta -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Sexta-feira</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="{{ form.friday_open.id_for_label }}" class="form-label small">Abertura</label>
+                                    {{ form.friday_open }}
+                                </div>
+                                <div class="col-6">
+                                    <label for="{{ form.friday_close.id_for_label }}" class="form-label small">Fechamento</label>
+                                    {{ form.friday_close }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sábado -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Sábado</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="{{ form.saturday_open.id_for_label }}" class="form-label small">Abertura</label>
+                                    {{ form.saturday_open }}
+                                </div>
+                                <div class="col-6">
+                                    <label for="{{ form.saturday_close.id_for_label }}" class="form-label small">Fechamento</label>
+                                    {{ form.saturday_close }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Domingo -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Domingo</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="{{ form.sunday_open.id_for_label }}" class="form-label small">Abertura</label>
+                                    {{ form.sunday_open }}
+                                </div>
+                                <div class="col-6">
+                                    <label for="{{ form.sunday_close.id_for_label }}" class="form-label small">Fechamento</label>
+                                    {{ form.sunday_close }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save me-2"></i>Criar Salão
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
