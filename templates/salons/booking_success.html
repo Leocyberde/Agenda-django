@@ -1,4 +1,11 @@
-{% extends 'base/base.html' %}
+
+{% load static %}
+
+{% if is_public_booking %}
+    {% extends 'base/public_base.html' %}
+{% else %}
+    {% extends 'base/base.html' %}
+{% endif %}
 
 {% block title %}Agendamento Confirmado - {{ salon.name }}{% endblock %}
 
@@ -12,7 +19,7 @@
                     <div class="mb-4">
                         <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
                     </div>
-                    
+
                     <h3 class="text-success mb-3">Agendamento Confirmado!</h3>
                     <p class="lead text-muted mb-4">
                         Seu agendamento foi realizado com sucesso. Confira os detalhes abaixo:
@@ -72,7 +79,7 @@
                     <h6 class="text-primary mb-3">
                         <i class="fas fa-info-circle me-2"></i>Informações Importantes
                     </h6>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <ul class="list-unstyled">
@@ -118,6 +125,15 @@
                 <strong>Política de Cancelamento:</strong> Para cancelar ou reagendar, entre em contato 
                 com pelo menos 2 horas de antecedência através do telefone {{ salon.phone }}.
             </div>
+
+            <!-- Botão para fechar (apenas para agendamentos públicos) -->
+            {% if is_public_booking %}
+            <div class="text-center mt-4 mb-3">
+                <button type="button" class="btn btn-secondary" onclick="window.close()">
+                    <i class="fas fa-times me-2"></i>Fechar
+                </button>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

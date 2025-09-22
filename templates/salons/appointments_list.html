@@ -53,6 +53,7 @@
                                 <tr>
                                     <th>Cliente</th>
                                     <th>Serviço</th>
+                                    <th>Profissional</th>
                                     <th>Data</th>
                                     <th>Horário</th>
                                     <th>Status</th>
@@ -74,6 +75,13 @@
                                             {{ appointment.service.name }}
                                             <br>
                                             <small class="text-muted">{{ appointment.service.duration }} min</small>
+                                        </td>
+                                        <td>
+                                            {% if appointment.employee %}
+                                                <strong>{{ appointment.employee.user.get_full_name|default:appointment.employee.user.username }}</strong>
+                                            {% else %}
+                                                <span class="text-muted">Não atribuído</span>
+                                            {% endif %}
                                         </td>
                                         <td>{{ appointment.appointment_date|date:"d/m/Y" }}</td>
                                         <td>{{ appointment.appointment_time|time:"H:i" }}</td>

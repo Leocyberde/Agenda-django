@@ -20,11 +20,11 @@ def create_salon(request):
     if request.user.profile.user_type != 'owner':
         messages.error(request, 'Acesso negado.')
         return redirect('accounts:dashboard')
-    
+
     # Verificar se já tem salão
     if hasattr(request.user, 'salon'):
         return redirect('salons:owner_dashboard')
-    
+
     if request.method == 'POST':
         form = SalonForm(request.POST)
         if form.is_valid():
@@ -35,18 +35,18 @@ def create_salon(request):
             return redirect('salons:owner_dashboard')
     else:
         form = SalonForm()
-    
+
     return render(request, 'salons/create_salon.html', {'form': form})
 
 @subscription_required
 def owner_dashboard(request):
     """Dashboard do proprietário"""
     salon = request.user.salon
-    
+
     # Estatísticas
     today = timezone.now().date()
     week_start = today - timedelta(days=today.weekday())
-    
+
     stats = {
         'appointments_today': Appointment.objects.filter(
             salon=salon, 
@@ -64,17 +64,17 @@ def owner_dashboard(request):
         'total_services': salon.services.filter(is_active=True).count(),
         'total_employees': salon.employees.filter(is_active=True).count(),
     }
-    
+
     # Próximos agendamentos
     upcoming_appointments = Appointment.objects.filter(
         salon=salon,
         appointment_date__gte=today,
         status__in=['scheduled', 'confirmed']
     ).order_by('appointment_date', 'appointment_time')[:5]
-    
+
     # Informações da assinatura
     subscription = request.user.subscription
-    
+
     return render(request, 'salons/owner_dashboard.html', {
         'salon': salon,
         'stats': stats,
@@ -86,7 +86,7 @@ def owner_dashboard(request):
 def edit_salon(request):
     """Editar informações do salão"""
     salon = request.user.salon
-    
+
     if request.method == 'POST':
         form = SalonForm(request.POST, instance=salon)
         if form.is_valid():
@@ -95,7 +95,7 @@ def edit_salon(request):
             return redirect('salons:owner_dashboard')
     else:
         form = SalonForm(instance=salon)
-    
+
     return render(request, 'salons/edit_salon.html', {
         'form': form,
         'salon': salon
@@ -106,7 +106,7 @@ def services_list(request):
     """Lista de serviços do salão"""
     salon = request.user.salon
     services = salon.services.all().order_by('name')
-    
+
     return render(request, 'salons/services_list.html', {
         'services': services,
         'salon': salon
@@ -116,7 +116,7 @@ def services_list(request):
 def create_service(request):
     """Criar novo serviço"""
     salon = request.user.salon
-    
+
     if request.method == 'POST':
         form = ServiceForm(request.POST)
         if form.is_valid():
@@ -127,7 +127,7 @@ def create_service(request):
             return redirect('salons:services_list')
     else:
         form = ServiceForm()
-    
+
     return render(request, 'salons/create_service.html', {
         'form': form,
         'salon': salon
@@ -138,7 +138,7 @@ def edit_service(request, service_id):
     """Editar serviço"""
     salon = request.user.salon
     service = get_object_or_404(Service, id=service_id, salon=salon)
-    
+
     if request.method == 'POST':
         form = ServiceForm(request.POST, instance=service)
         if form.is_valid():
@@ -147,7 +147,7 @@ def edit_service(request, service_id):
             return redirect('salons:services_list')
     else:
         form = ServiceForm(instance=service)
-    
+
     return render(request, 'salons/edit_service.html', {
         'form': form,
         'service': service,
@@ -159,12 +159,12 @@ def delete_service(request, service_id):
     """Deletar serviço"""
     salon = request.user.salon
     service = get_object_or_404(Service, id=service_id, salon=salon)
-    
+
     if request.method == 'POST':
         service.delete()
         messages.success(request, 'Serviço deletado com sucesso!')
         return redirect('salons:services_list')
-    
+
     return render(request, 'salons/delete_service.html', {
         'service': service,
         'salon': salon
@@ -174,25 +174,25 @@ def delete_service(request, service_id):
 def appointments_list(request):
     """Lista de agendamentos do salão"""
     salon = request.user.salon
-    
+
     # Filtros
     status_filter = request.GET.get('status', '')
     date_filter = request.GET.get('date', '')
-    
+
     appointments = Appointment.objects.filter(salon=salon)
-    
+
     if status_filter:
         appointments = appointments.filter(status=status_filter)
-    
+
     if date_filter:
         try:
             filter_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
             appointments = appointments.filter(appointment_date=filter_date)
         except ValueError:
             pass
-    
+
     appointments = appointments.order_by('-appointment_date', '-appointment_time')
-    
+
     return render(request, 'salons/appointments_list.html', {
         'appointments': appointments,
         'salon': salon,
@@ -208,7 +208,7 @@ def employees_list(request):
     """Lista de funcionários do salão"""
     salon = request.user.salon
     employees = salon.employees.all().order_by('user__first_name')
-    
+
     return render(request, 'salons/employees_list.html', {
         'employees': employees,
         'salon': salon
@@ -219,7 +219,7 @@ def employees_list(request):
 def create_employee(request):
     """Criar novo funcionário"""
     salon = request.user.salon
-    
+
     if request.method == 'POST':
         form = EmployeeForm(request.POST, salon=salon)
         if form.is_valid():
@@ -232,25 +232,25 @@ def create_employee(request):
                     last_name=form.cleaned_data['last_name'],
                     password=form.cleaned_data['password']
                 )
-                
+
                 # Definir como funcionário
                 user.profile.user_type = 'employee'
                 user.profile.save()
-                
+
                 # Criar employee
                 employee = form.save(commit=False)
                 employee.user = user
                 employee.salon = salon
                 employee.save()
                 form.save_m2m()  # Salvar many-to-many relationships
-                
+
                 messages.success(request, f'Funcionário {user.get_full_name()} criado com sucesso!')
                 return redirect('salons:employees_list')
             except Exception as e:
                 messages.error(request, f'Erro ao criar funcionário: {str(e)}')
     else:
         form = EmployeeForm(salon=salon)
-    
+
     return render(request, 'salons/create_employee.html', {
         'form': form,
         'salon': salon
@@ -261,7 +261,7 @@ def edit_employee(request, employee_id):
     """Editar funcionário"""
     salon = request.user.salon
     employee = get_object_or_404(Employee, id=employee_id, salon=salon)
-    
+
     if request.method == 'POST':
         form = EmployeeEditForm(request.POST, instance=employee, salon=salon)
         if form.is_valid():
@@ -270,7 +270,7 @@ def edit_employee(request, employee_id):
             return redirect('salons:employees_list')
     else:
         form = EmployeeEditForm(instance=employee, salon=salon)
-    
+
     return render(request, 'salons/edit_employee.html', {
         'form': form,
         'employee': employee,
@@ -282,18 +282,18 @@ def delete_employee(request, employee_id):
     """Deletar funcionário"""
     salon = request.user.salon
     employee = get_object_or_404(Employee, id=employee_id, salon=salon)
-    
+
     if request.method == 'POST':
         user = employee.user
         employee_name = user.get_full_name()
-        
+
         # Deletar funcionário (o usuário também será deletado devido ao CASCADE)
         employee.delete()
         user.delete()
-        
+
         messages.success(request, f'Funcionário {employee_name} removido com sucesso!')
         return redirect('salons:employees_list')
-    
+
     return render(request, 'salons/delete_employee.html', {
         'employee': employee,
         'salon': salon
@@ -313,16 +313,16 @@ def employee_dashboard(request):
     """Dashboard do funcionário"""
     employee = request.user.employee_profile
     salon = employee.salon
-    
+
     # Estatísticas do funcionário
     today = timezone.now().date()
     week_start = today - timedelta(days=today.weekday())
-    
+
     my_appointments = Appointment.objects.filter(
         employee=employee,
         appointment_date__gte=today
     ).order_by('appointment_date', 'appointment_time')
-    
+
     stats = {
         'appointments_today': my_appointments.filter(
             appointment_date=today
@@ -336,12 +336,12 @@ def employee_dashboard(request):
         ).count(),
         'my_services': employee.services.filter(is_active=True).count(),
     }
-    
+
     # Próximos agendamentos do funcionário
     upcoming_appointments = my_appointments.filter(
         status__in=['scheduled', 'confirmed']
     )[:5]
-    
+
     return render(request, 'salons/employee_dashboard.html', {
         'employee': employee,
         'salon': salon,
@@ -358,25 +358,25 @@ def employee_appointments(request):
     """Lista de agendamentos do funcionário"""
     employee = request.user.employee_profile
     salon = employee.salon
-    
+
     # Filtros
     status_filter = request.GET.get('status', '')
     date_filter = request.GET.get('date', '')
-    
+
     appointments = Appointment.objects.filter(employee=employee)
-    
+
     if status_filter:
         appointments = appointments.filter(status=status_filter)
-    
+
     if date_filter:
         try:
             filter_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
             appointments = appointments.filter(appointment_date=filter_date)
         except ValueError:
             pass
-    
+
     appointments = appointments.order_by('-appointment_date', '-appointment_time')
-    
+
     return render(request, 'salons/employee_appointments.html', {
         'appointments': appointments,
         'employee': employee,
@@ -392,29 +392,29 @@ def employee_appointments(request):
 def generate_booking_link(request):
     """Gerar ou regenerar link de agendamento"""
     salon = request.user.salon
-    
+
     if request.method == 'POST':
         # Criar ou atualizar token de agendamento
         booking_token, created = BookingToken.objects.get_or_create(
             salon=salon,
             defaults={'is_active': True}
         )
-        
+
         if not created:
             # Regenerar token
             booking_token.token = ''
             booking_token.is_active = True
             booking_token.save()
-        
+
         messages.success(request, 'Link de agendamento gerado com sucesso!')
         return redirect('salons:generate_booking_link')
-    
+
     # Obter token existente
     try:
         booking_token = salon.booking_token
     except BookingToken.DoesNotExist:
         booking_token = None
-    
+
     return render(request, 'salons/generate_booking_link.html', {
         'salon': salon,
         'booking_token': booking_token
@@ -424,17 +424,17 @@ def generate_booking_link(request):
 def toggle_booking_link(request):
     """Ativar/desativar link de agendamento"""
     salon = request.user.salon
-    
+
     try:
         booking_token = salon.booking_token
         booking_token.is_active = not booking_token.is_active
         booking_token.save()
-        
+
         status = "ativado" if booking_token.is_active else "desativado"
         messages.success(request, f'Link de agendamento {status} com sucesso!')
     except BookingToken.DoesNotExist:
         messages.error(request, 'Nenhum link de agendamento encontrado. Gere um novo link primeiro.')
-    
+
     return redirect('salons:owner_dashboard')
 
 # ============== AGENDAMENTO PÚBLICO ==============
@@ -446,28 +446,28 @@ def public_booking(request, token):
         salon = booking_token.salon
         services = salon.services.filter(is_active=True)
         employees = salon.employees.filter(is_active=True)
-        
+
         if request.method == 'POST':
             try:
                 # Dados do cliente
                 client_name = request.POST.get('client_name', '').strip()
                 client_email = request.POST.get('client_email', '').strip()
                 client_phone = request.POST.get('client_phone', '').strip()
-                
+
                 # Dados do agendamento
                 service_id = request.POST.get('service_id')
                 employee_id = request.POST.get('employee_id') or None
                 appointment_date = request.POST.get('appointment_date')
                 appointment_time = request.POST.get('appointment_time')
                 notes = request.POST.get('notes', '').strip()
-                
+
                 # Validações
                 if not all([client_name, client_email, service_id, appointment_date, appointment_time]):
                     messages.error(request, 'Por favor, preencha todos os campos obrigatórios.')
                     return render(request, 'salons/public_booking.html', {
                         'salon': salon, 'services': services, 'employees': employees, 'token': token
                     })
-                
+
                 # Verificar se o serviço existe e pertence ao salão
                 try:
                     service = Service.objects.get(id=service_id, salon=salon, is_active=True)
@@ -476,10 +476,11 @@ def public_booking(request, token):
                     return render(request, 'salons/public_booking.html', {
                         'salon': salon, 'services': services, 'employees': employees, 'token': token
                     })
-                
-                # Verificar se o funcionário existe e pertence ao salão
+
+                # Verificar/atribuir funcionário
                 employee = None
-                if employee_id:
+                if employee_id and employee_id != "":
+                    # Funcionário específico foi selecionado
                     try:
                         employee = Employee.objects.get(id=employee_id, salon=salon, is_active=True)
                         # Verificar se o funcionário pode fazer o serviço
@@ -493,7 +494,23 @@ def public_booking(request, token):
                         return render(request, 'salons/public_booking.html', {
                             'salon': salon, 'services': services, 'employees': employees, 'token': token
                         })
-                
+                else:
+                    # Nenhum funcionário específico - atribuir automaticamente um disponível que possa fazer o serviço
+                    available_employees = salon.employees.filter(
+                        is_active=True,
+                        services=service  # Funcionários que podem fazer este serviço
+                    ).distinct()
+
+                    if available_employees.exists():
+                        # Selecionar o primeiro funcionário disponível que pode fazer o serviço
+                        employee = available_employees.first()
+                    else:
+                        # Nenhum funcionário pode fazer este serviço
+                        messages.error(request, 'Nenhum profissional disponível para este serviço no momento. Tente novamente mais tarde ou escolha outro serviço.')
+                        return render(request, 'salons/public_booking.html', {
+                            'salon': salon, 'services': services, 'employees': employees, 'token': token
+                        })
+
                 # Verificar data e horário
                 from datetime import datetime, date
                 try:
@@ -504,14 +521,14 @@ def public_booking(request, token):
                     return render(request, 'salons/public_booking.html', {
                         'salon': salon, 'services': services, 'employees': employees, 'token': token
                     })
-                
+
                 # Verificar se a data não é no passado
                 if appointment_date_obj < date.today():
                     messages.error(request, 'Não é possível agendar para datas passadas.')
                     return render(request, 'salons/public_booking.html', {
                         'salon': salon, 'services': services, 'employees': employees, 'token': token
                     })
-                
+
                 # Verificar se já existe agendamento no mesmo horário
                 existing_appointment = None
                 if employee:
@@ -527,13 +544,13 @@ def public_booking(request, token):
                         appointment_date=appointment_date_obj,
                         appointment_time=appointment_time_obj
                     ).first()
-                
+
                 if existing_appointment:
                     messages.error(request, 'Este horário já está ocupado. Escolha outro horário.')
                     return render(request, 'salons/public_booking.html', {
                         'salon': salon, 'services': services, 'employees': employees, 'token': token
                     })
-                
+
                 # Criar ou obter o usuário cliente
                 with transaction.atomic():
                     # Verificar se já existe um usuário com este email
@@ -559,7 +576,7 @@ def public_booking(request, token):
                         if client_phone:
                             client.profile.phone = client_phone
                         client.profile.save()
-                    
+
                     # Criar o agendamento
                     appointment = Appointment.objects.create(
                         client=client,
@@ -571,19 +588,21 @@ def public_booking(request, token):
                         notes=notes,
                         status='scheduled'
                     )
-                    
-                    messages.success(request, f'Agendamento confirmado! Seu agendamento para {service.name} no dia {appointment_date_obj.strftime("%d/%m/%Y")} às {appointment_time_obj.strftime("%H:%M")} foi criado com sucesso.')
+
+                    # Redirecionar para página de sucesso específica do agendamento público
                     return render(request, 'salons/booking_success.html', {
                         'salon': salon,
-                        'appointment': appointment
+                        'appointment': appointment,
+                        'token': token,
+                        'is_public_booking': True
                     })
-                    
+
             except Exception as e:
                 messages.error(request, f'Erro ao processar agendamento: {str(e)}')
                 return render(request, 'salons/public_booking.html', {
                     'salon': salon, 'services': services, 'employees': employees, 'token': token
                 })
-        
+
         return render(request, 'salons/public_booking.html', {
             'salon': salon,
             'services': services,
@@ -591,7 +610,7 @@ def public_booking(request, token):
             'token': token,
             'today': timezone.now().date()
         })
-        
+
     except BookingToken.DoesNotExist:
         messages.error(request, 'Link de agendamento inválido ou expirado.')
         return redirect('core:landing_page')
