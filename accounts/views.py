@@ -22,8 +22,14 @@ class RegisterView(CreateView):
 def register_view(request):
     plan = request.GET.get('plan', 'trial')
     
+    # Determinar o tipo de plano correto
+    if plan == 'vip':
+        plan_type = 'vip_30'
+    else:
+        plan_type = 'trial_10'
+    
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST, plan_type=plan_type)
         if form.is_valid():
             user = form.save()
             messages.success(request, 'Conta criada com sucesso! Faça login para continuar.')
@@ -34,7 +40,7 @@ def register_view(request):
             else:
                 return redirect('accounts:login')
     else:
-        form = CustomUserCreationForm()
+        form = CustomUserCreationForm(plan_type=plan_type)
     
     return render(request, 'accounts/register.html', {
         'form': form,
@@ -69,27 +75,6 @@ def dashboard_view(request):
     profile = request.user.profile
     
     if profile.user_type == 'owner':
-        # Para proprietários, verificar se há um plano especificado
-        plan = request.GET.get('plan')
-        
-        # Se tem plano especificado e não tem assinatura, criar assinatura com o plano correto
-        if plan and not hasattr(request.user, 'subscription'):
-            from subscriptions.models import Subscription
-            
-            # Determinar o tipo de plano
-            if plan == 'vip':
-                plan_type = 'vip_30'
-            else:
-                plan_type = 'trial_10'
-            
-            # Criar assinatura com o plano correto
-            subscription = Subscription.objects.create(
-                user=request.user,
-                plan_type=plan_type
-            )
-            
-            messages.success(request, f'Assinatura {subscription.get_plan_type_display()} criada com sucesso!')
-        
         # Verificar se tem salão cadastrado
         if hasattr(request.user, 'salon'):
             return redirect('salons:owner_dashboard')

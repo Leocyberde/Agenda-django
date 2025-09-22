@@ -20,8 +20,10 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = ('first_name', 'last_name', 'email', 'password1', 'password2')
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, plan_type='trial_10', **kwargs):
         super().__init__(*args, **kwargs)
+        self.plan_type = plan_type
+        
         # Customizar labels e placeholders
         self.fields['password1'].label = "Senha"
         self.fields['password2'].label = "Confirmar senha"
@@ -78,7 +80,7 @@ class CustomUserCreationForm(UserCreationForm):
                 
                 # Criar assinatura automática para proprietários
                 from subscriptions.models import Subscription
-                Subscription.objects.create(user=user, plan_type='trial_10')
+                Subscription.objects.create(user=user, plan_type=self.plan_type)
         
         return user
 
