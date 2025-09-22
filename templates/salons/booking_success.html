@@ -1,11 +1,6 @@
 
+{% extends 'base/public_base.html' %}
 {% load static %}
-
-{% if is_public_booking %}
-    {% extends 'base/public_base.html' %}
-{% else %}
-    {% extends 'base/base.html' %}
-{% endif %}
 
 {% block title %}Agendamento Confirmado - {{ salon.name }}{% endblock %}
 
