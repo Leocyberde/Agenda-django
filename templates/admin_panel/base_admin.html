@@ -25,28 +25,26 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .admin-sidebar {
-            background: var(--admin-dark);
-            min-height: calc(100vh - 76px);
-            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+        .admin-dropdown {
+            background-color: var(--admin-dark);
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         
-        .admin-sidebar .nav-link {
+        .admin-dropdown .dropdown-item {
             color: #adb5bd;
             padding: 12px 20px;
-            border-radius: 8px;
-            margin: 4px 8px;
             transition: all 0.3s;
         }
         
-        .admin-sidebar .nav-link:hover {
+        .admin-dropdown .dropdown-item:hover {
             background-color: var(--admin-primary);
             color: white;
         }
         
-        .admin-sidebar .nav-link.active {
-            background-color: var(--admin-primary);
-            color: white;
+        .admin-dropdown .dropdown-item i {
+            width: 20px;
         }
         
         .admin-card {
@@ -91,14 +89,33 @@
             
             <div class="navbar-nav ms-auto">
                 <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-shield me-1"></i>{{ user.first_name|default:user.username }}
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="adminMenuDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-bars me-1"></i>Menu Administrativo
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu admin-dropdown">
+                        <li><a class="dropdown-item" href="{% url 'admin_panel:dashboard' %}">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_panel:manage_owners' %}">
+                            <i class="fas fa-users me-2"></i>Comerciantes
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_panel:subscription_reports' %}">
+                            <i class="fas fa-chart-bar me-2"></i>Relatórios
+                        </a></li>
+                        <li><a class="dropdown-item" href="/admin/">
+                            <i class="fas fa-cogs me-2"></i>Django Admin
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'core:landing_page' %}">
                             <i class="fas fa-home me-2"></i>Ir para Site
                         </a></li>
-                        <li><hr class="dropdown-divider"></li>
+                    </ul>
+                </div>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="adminUserDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-shield me-1"></i>{{ user.first_name|default:user.username }}
+                    </a>
+                    <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">
                             <i class="fas fa-sign-out-alt me-2"></i>Sair
                         </a></li>
@@ -109,46 +126,22 @@
     </nav>
 
     <div class="container-fluid">
-        <div class="row">
-            <!-- Admin Sidebar -->
-            <div class="col-md-3 col-lg-2 px-0">
-                <div class="admin-sidebar">
-                    <nav class="nav flex-column py-3">
-                        <a class="nav-link" href="{% url 'admin_panel:dashboard' %}">
-                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                        </a>
-                        <a class="nav-link" href="{% url 'admin_panel:manage_owners' %}">
-                            <i class="fas fa-users me-2"></i>Comerciantes
-                        </a>
-                        <a class="nav-link" href="{% url 'admin_panel:subscription_reports' %}">
-                            <i class="fas fa-chart-bar me-2"></i>Relatórios
-                        </a>
-                        <a class="nav-link" href="/admin/">
-                            <i class="fas fa-cogs me-2"></i>Django Admin
-                        </a>
-                    </nav>
-                </div>
-            </div>
-            
-            <div class="col-md-9 col-lg-10">
-                <!-- Messages -->
-                {% if messages %}
-                    <div class="mt-3">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
+        <!-- Messages -->
+        {% if messages %}
+            <div class="mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                {% endif %}
-
-                <!-- Main Content -->
-                <div class="mt-4">
-                    {% block content %}
-                    {% endblock %}
-                </div>
+                {% endfor %}
             </div>
+        {% endif %}
+
+        <!-- Main Content -->
+        <div class="mt-4">
+            {% block content %}
+            {% endblock %}
         </div>
     </div>
 

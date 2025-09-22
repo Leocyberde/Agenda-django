@@ -40,29 +40,30 @@
             color: var(--secondary-color) !important;
         }
         
-        .sidebar {
+        .owner-dropdown {
             background: white;
-            min-height: calc(100vh - 76px);
-            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
-            border-right: 1px solid #e9ecef;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         
-        .sidebar .nav-link {
+        .owner-dropdown .dropdown-item {
             color: var(--text-dark);
             padding: 12px 20px;
-            border-radius: 8px;
-            margin: 4px 8px;
             transition: all 0.3s;
         }
         
-        .sidebar .nav-link:hover {
+        .owner-dropdown .dropdown-item:hover {
             background-color: var(--primary-light);
             color: white;
-            transform: translateX(5px);
         }
         
-        .sidebar .nav-link.active {
-            background-color: var(--primary-color);
+        .owner-dropdown .dropdown-item i {
+            width: 20px;
+        }
+        
+        .owner-dropdown .dropdown-item.text-danger:hover {
+            background-color: #dc3545;
             color: white;
         }
         
@@ -153,16 +154,11 @@
             border-left: 4px solid #dc3545;
         }
         
-        .sidebar .nav-link.text-danger:hover {
-            background-color: #dc3545;
-            color: white !important;
-            transform: translateX(5px);
-        }
     </style>
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'core:landing_page' %}">
                 <i class="fas fa-cut me-2"></i>Sistema de Agendamento
@@ -175,6 +171,34 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
+                        {% if user.profile.user_type == 'owner' %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="ownerMenuDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-bars me-1"></i>Menu do Comerciante
+                                </a>
+                                <ul class="dropdown-menu owner-dropdown">
+                                    <li><a class="dropdown-item" href="{% url 'salons:owner_dashboard' %}">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'salons:edit_salon' %}">
+                                        <i class="fas fa-store me-2"></i>Meu Salão
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'salons:services_list' %}">
+                                        <i class="fas fa-list me-2"></i>Serviços
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'salons:appointments_list' %}">
+                                        <i class="fas fa-calendar-alt me-2"></i>Agendamentos
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'subscriptions:detail' %}">
+                                        <i class="fas fa-crown me-2"></i>Assinatura
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Sair do Sistema
+                                    </a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user me-1"></i>{{ user.first_name|default:user.username }}
@@ -213,57 +237,22 @@
 
     <!-- Content -->
     <div class="container-fluid">
-        <div class="row">
-            {% if user.is_authenticated and user.profile.user_type == 'owner' %}
-                <!-- Sidebar para proprietários -->
-                <div class="col-md-3 col-lg-2 px-0">
-                    <div class="sidebar">
-                        <nav class="nav flex-column py-3">
-                            <a class="nav-link" href="{% url 'salons:owner_dashboard' %}">
-                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                            </a>
-                            <a class="nav-link" href="{% url 'salons:edit_salon' %}">
-                                <i class="fas fa-store me-2"></i>Meu Salão
-                            </a>
-                            <a class="nav-link" href="{% url 'salons:services_list' %}">
-                                <i class="fas fa-list me-2"></i>Serviços
-                            </a>
-                            <a class="nav-link" href="{% url 'salons:appointments_list' %}">
-                                <i class="fas fa-calendar-alt me-2"></i>Agendamentos
-                            </a>
-                            <a class="nav-link" href="{% url 'subscriptions:detail' %}">
-                                <i class="fas fa-crown me-2"></i>Assinatura
-                            </a>
-                            <hr class="my-3 mx-3" style="border-color: #dee2e6;">
-                            <a class="nav-link text-danger" href="{% url 'accounts:logout' %}">
-                                <i class="fas fa-sign-out-alt me-2"></i>Sair do Sistema
-                            </a>
-                        </nav>
+        <!-- Messages -->
+        {% if messages %}
+            <div class="mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                </div>
-                <div class="col-md-9 col-lg-10">
-            {% else %}
-                <div class="col-12">
-            {% endif %}
-                
-                <!-- Messages -->
-                {% if messages %}
-                    <div class="mt-3">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
-                <!-- Main Content -->
-                <div class="main-content">
-                    {% block content %}
-                    {% endblock %}
-                </div>
+                {% endfor %}
             </div>
+        {% endif %}
+
+        <!-- Main Content -->
+        <div class="main-content">
+            {% block content %}
+            {% endblock %}
         </div>
     </div>
 
