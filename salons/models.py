@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Salon(models.Model):
     name = models.CharField(max_length=100, verbose_name="Nome do Salão")
     description = models.TextField(blank=True, null=True, verbose_name="Descrição")
-    photo = models.URLField(blank=True, null=True, verbose_name="Foto do Salão")
+    photo = models.ImageField(upload_to='salon_photos/', blank=True, null=True, verbose_name="Foto do Salão")
     address = models.CharField(max_length=200, verbose_name="Endereço")
     city = models.CharField(max_length=100, verbose_name="Cidade")
     state = models.CharField(max_length=2, verbose_name="Estado")
