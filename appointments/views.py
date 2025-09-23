@@ -91,6 +91,9 @@ def client_booking(request, token):
                             return redirect('appointments:client_booking', token=token)
 
                     except Exception as e:
+                        print(f"Erro ao criar agendamento: {str(e)}")  # Log para debug
+                        import traceback
+                        traceback.print_exc()
                         messages.error(request, f'Erro ao criar agendamento: {str(e)}')
                         return redirect('appointments:client_booking', token=token)
 
@@ -203,6 +206,9 @@ def client_booking(request, token):
                         return redirect('appointments:client_booking', token=token)
 
                 except Exception as e:
+                    print(f"Erro ao processar cliente novo: {str(e)}")  # Log para debug
+                    import traceback
+                    traceback.print_exc()
                     messages.error(request, f'Erro ao processar: {str(e)}')
                     return redirect('appointments:client_booking', token=token)
 
