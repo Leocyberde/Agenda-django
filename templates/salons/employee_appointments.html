@@ -112,9 +112,19 @@
                                         {{ appointment.appointment_time|time:"H:i" }} - {{ appointment.get_end_time|time:"H:i" }}
                                     </td>
                                     <td>
-                                        <span class="badge bg-{% if appointment.status == 'confirmed' %}success{% elif appointment.status == 'scheduled' %}warning text-dark{% elif appointment.status == 'completed' %}primary{% elif appointment.status == 'cancelled' %}danger{% else %}secondary{% endif %}">
-                                            {{ appointment.get_status_display }}
-                                        </span>
+                                        {% if appointment.status == 'confirmed' %}
+                                            <span class="badge bg-success">{{ appointment.get_status_display }}</span>
+                                        {% elif appointment.status == 'scheduled' %}
+                                            <span class="badge bg-warning text-dark">{{ appointment.get_status_display }}</span>
+                                        {% elif appointment.status == 'completed' %}
+                                            <span class="badge bg-primary">{{ appointment.get_status_display }}</span>
+                                        {% elif appointment.status == 'cancelled' %}
+                                            <span class="badge bg-danger">{{ appointment.get_status_display }}</span>
+                                        {% elif appointment.status == 'rescheduled' %}
+                                            <span class="badge bg-info">{{ appointment.get_status_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ appointment.get_status_display }}</span>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         {% if appointment.notes %}
@@ -135,14 +145,19 @@
                                                 </form>
                                             {% endif %}
 
-                                            {% if appointment.status in 'scheduled,confirmed' and appointment.appointment_date >= today %}
-                                                <button class="btn btn-outline-primary btn-sm" title="Reagendar" 
-                                                        data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ appointment.id }}">
+                                            {% if appointment.appointment_date >= today and appointment.status == 'scheduled' or appointment.appointment_date >= today and appointment.status == 'confirmed' %}
+                                                <button class="btn btn-outline-primary btn-sm reschedule-btn" title="Reagendar" 
+                                                        data-appointment-id="{{ appointment.id }}"
+                                                        data-appointment-date="{{ appointment.appointment_date|date:'Y-m-d' }}"
+                                                        data-appointment-time="{{ appointment.appointment_time|time:'H:i' }}"
+                                                        data-client-name="{{ appointment.client.get_full_name|default:appointment.client.username }}"
+                                                        data-service-name="{{ appointment.service.name }}"
+                                                        data-action-url="{% url 'salons:employee_manage_appointment' appointment.id %}">
                                                     <i class="fas fa-calendar-alt"></i>
                                                 </button>
                                             {% endif %}
 
-                                            {% if appointment.status in 'scheduled,confirmed' %}
+                                            {% if appointment.status == 'scheduled' or appointment.status == 'confirmed' %}
                                                 <form method="post" action="{% url 'salons:employee_manage_appointment' appointment.id %}" style="display: inline;">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="action" value="complete">
@@ -164,43 +179,6 @@
                                             {% endif %}
                                         </div>
 
-                                        <!-- Modal de Reagendamento -->
-                                        {% if appointment.status in 'scheduled,confirmed' and appointment.appointment_date >= today %}
-                                        <div class="modal fade" id="rescheduleModal{{ appointment.id }}" tabindex="-1">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Reagendar Agendamento</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                    </div>
-                                                    <form method="post" action="{% url 'salons:employee_manage_appointment' appointment.id %}" onsubmit="return confirmReschedule(this);">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="action" value="reschedule">
-                                                        <div class="modal-body">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Nova Data</label>
-                                                                <input type="date" name="rescheduled_date" class="form-control" 
-                                                                       min="{{ today|date:'Y-m-d' }}" required>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Novo Horário</label>
-                                                                <input type="time" name="rescheduled_time" class="form-control" required>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Motivo</label>
-                                                                <textarea name="rescheduled_reason" class="form-control" rows="3" 
-                                                                          placeholder="Motivo do reagendamento..."></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                            <button type="submit" class="btn btn-primary">Propor Reagendamento</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -226,35 +204,127 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Único de Reagendamento -->
+<div class="modal fade" id="rescheduleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reagendar Agendamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" id="rescheduleForm">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reschedule">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Agendamento Atual:</strong></label>
+                        <div class="p-2 bg-light rounded">
+                            <small class="text-muted d-block" id="currentAppointmentInfo"></small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nova Data</label>
+                        <input type="date" name="rescheduled_date" class="form-control" 
+                               min="{{ today|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Novo Horário</label>
+                        <input type="time" name="rescheduled_time" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Motivo</label>
+                        <textarea name="rescheduled_reason" class="form-control" rows="3" 
+                                  placeholder="Motivo do reagendamento..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Propor Reagendamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function confirmReschedule(form) {
-    // Fechar o modal antes de submeter
-    const modalId = form.closest('.modal').id;
-    const modalElement = document.getElementById(modalId);
-    const modal = bootstrap.Modal.getInstance(modalElement);
-    if (modal) {
-        modal.hide();
-    }
-    return true;
-}
-
-// Garantir que os modais fechem corretamente
 document.addEventListener('DOMContentLoaded', function() {
-    // Fechar todos os modais quando a página carregar
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(function(modal) {
-        modal.addEventListener('hidden.bs.modal', function() {
-            // Remove qualquer backdrop residual
-            const backdrops = document.querySelectorAll('.modal-backdrop');
-            backdrops.forEach(backdrop => backdrop.remove());
+    const rescheduleModal = document.getElementById('rescheduleModal');
+    const rescheduleForm = document.getElementById('rescheduleForm');
+    const currentAppointmentInfo = document.getElementById('currentAppointmentInfo');
+    const modalInstance = new bootstrap.Modal(rescheduleModal);
 
-            // Remove classe modal-open do body
-            document.body.classList.remove('modal-open');
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
+    // Event listeners para botões de reagendamento
+    document.querySelectorAll('.reschedule-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const appointmentId = this.dataset.appointmentId;
+            const appointmentDate = this.dataset.appointmentDate;
+            const appointmentTime = this.dataset.appointmentTime;
+            const clientName = this.dataset.clientName;
+            const serviceName = this.dataset.serviceName;
+
+            // Limpar formulário
+            rescheduleForm.reset();
+            
+            // Definir ação do formulário usando URL robusta
+            rescheduleForm.action = this.dataset.actionUrl;
+            
+            // Mostrar informações do agendamento atual (usando textContent para segurança)
+            currentAppointmentInfo.innerHTML = '';
+            
+            const clientInfo = document.createElement('div');
+            clientInfo.innerHTML = '<strong>Cliente:</strong> ';
+            clientInfo.appendChild(document.createTextNode(clientName));
+            
+            const serviceInfo = document.createElement('div');
+            serviceInfo.innerHTML = '<strong>Serviço:</strong> ';
+            serviceInfo.appendChild(document.createTextNode(serviceName));
+            
+            const dateInfo = document.createElement('div');
+            dateInfo.innerHTML = '<strong>Data/Hora atual:</strong> ';
+            dateInfo.appendChild(document.createTextNode(`${formatDate(appointmentDate)} às ${appointmentTime}`));
+            
+            currentAppointmentInfo.appendChild(clientInfo);
+            currentAppointmentInfo.appendChild(serviceInfo);
+            currentAppointmentInfo.appendChild(dateInfo);
+
+            // Abrir modal
+            modalInstance.show();
+        });
+    });
+
+    // Event listener para quando o modal é fechado
+    rescheduleModal.addEventListener('hidden.bs.modal', function() {
+        rescheduleForm.reset();
+        currentAppointmentInfo.innerHTML = '';
+        rescheduleForm.action = '';
+    });
+
+    // Event listener para quando o modal é mostrado
+    rescheduleModal.addEventListener('shown.bs.modal', function() {
+        const dateInput = rescheduleModal.querySelector('input[type="date"]');
+        if (dateInput) {
+            dateInput.focus();
+        }
+    });
+
+    // Função auxiliar para formatar data
+    function formatDate(dateString) {
+        const date = new Date(dateString + 'T00:00:00');
+        return date.toLocaleDateString('pt-BR');
+    }
+
+    // Garantir que apenas um modal esteja aberto (preventivo)
+    document.addEventListener('show.bs.modal', function(e) {
+        document.querySelectorAll('.modal.show').forEach(function(openModal) {
+            if (openModal !== e.target) {
+                const instance = bootstrap.Modal.getInstance(openModal);
+                if (instance) {
+                    instance.hide();
+                }
+            }
         });
     });
 });

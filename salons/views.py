@@ -366,14 +366,24 @@ def employee_appointments(request):
     view_type = request.GET.get('view', 'upcoming')  # 'upcoming' ou 'history'
 
     # Base queryset - sempre filtrar pelo funcionário
-    base_appointments = Appointment.objects.filter(employee=employee)
+    base_appointments = Appointment.objects.filter(employee=employee).select_related(
+        'client', 'service', 'salon'
+    )
 
     # Separar em próximos e histórico
     if view_type == 'history':
-        appointments = base_appointments.filter(appointment_date__lt=today)
+        # Para histórico, incluir agendamentos do passado OU agendamentos concluídos/cancelados
+        appointments = base_appointments.filter(
+            Q(appointment_date__lt=today) | 
+            Q(status__in=['completed', 'cancelled'])
+        )
         appointments = appointments.order_by('-appointment_date', '-appointment_time')
     else:  # upcoming
-        appointments = base_appointments.filter(appointment_date__gte=today)
+        # Para próximos, apenas agendamentos futuros que não foram concluídos ou cancelados
+        appointments = base_appointments.filter(
+            appointment_date__gte=today,
+            status__in=['scheduled', 'confirmed', 'rescheduled']
+        )
         appointments = appointments.order_by('appointment_date', 'appointment_time')
 
     # Aplicar filtros adicionais
@@ -388,8 +398,15 @@ def employee_appointments(request):
             pass
 
     # Contar próximos e histórico para exibir nas abas
-    upcoming_count = base_appointments.filter(appointment_date__gte=today).count()
-    history_count = base_appointments.filter(appointment_date__lt=today).count()
+    upcoming_count = base_appointments.filter(
+        appointment_date__gte=today,
+        status__in=['scheduled', 'confirmed', 'rescheduled']
+    ).count()
+    
+    history_count = base_appointments.filter(
+        Q(appointment_date__lt=today) | 
+        Q(status__in=['completed', 'cancelled'])
+    ).count()
 
     return render(request, 'salons/employee_appointments.html', {
         'appointments': appointments,

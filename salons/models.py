@@ -12,7 +12,7 @@ class Salon(models.Model):
     phone = models.CharField(max_length=15, verbose_name="Telefone")
     email = models.EmailField(verbose_name="Email")
     owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name='salon', verbose_name="Proprietário")
-    
+
     # Horários de funcionamento simplificados
     weekdays_open = models.TimeField(blank=True, null=True, verbose_name="Segunda à Sexta - Abertura")
     weekdays_close = models.TimeField(blank=True, null=True, verbose_name="Segunda à Sexta - Fechamento")
@@ -20,13 +20,13 @@ class Salon(models.Model):
     saturday_close = models.TimeField(blank=True, null=True, verbose_name="Sábado - Fechamento")
     sunday_open = models.TimeField(blank=True, null=True, verbose_name="Domingo - Abertura")
     sunday_close = models.TimeField(blank=True, null=True, verbose_name="Domingo - Fechamento")
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return self.name
-    
+
     def get_working_hours(self, day_of_week):
         """Retorna horário de funcionamento para um dia específico (0=segunda, 6=domingo)"""
         if 0 <= day_of_week <= 4:  # Segunda a sexta (0-4)
@@ -36,7 +36,7 @@ class Salon(models.Model):
         elif day_of_week == 6:  # Domingo (6)
             return self.sunday_open, self.sunday_close
         return None, None
-    
+
     class Meta:
         verbose_name = "Salão"
         verbose_name_plural = "Salões"
@@ -50,10 +50,10 @@ class Service(models.Model):
     is_active = models.BooleanField(default=True, verbose_name="Ativo")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f"{self.salon.name} - {self.name}"
-    
+
     class Meta:
         verbose_name = "Serviço"
         verbose_name_plural = "Serviços"
@@ -67,13 +67,11 @@ class Employee(models.Model):
     hire_date = models.DateField(auto_now_add=True, verbose_name="Data de contratação")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} - {self.salon.name}"
-    
+
     class Meta:
         verbose_name = "Funcionário"
         verbose_name_plural = "Funcionários"
         unique_together = ['user', 'salon']
-
-
