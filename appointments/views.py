@@ -26,6 +26,8 @@ def client_booking(request, token):
             pending_reschedules = appointments.filter(status='rescheduled')
 
             if request.method == 'POST':
+                print(f"POST REQUEST RECEBIDO - Cliente existente")
+                print(f"POST data: {dict(request.POST)}")
                 action = request.POST.get('action')
 
                 if action == 'new_appointment':
@@ -91,7 +93,11 @@ def client_booking(request, token):
                             return redirect('appointments:client_booking', token=token)
 
                     except Exception as e:
-                        print(f"Erro ao criar agendamento: {str(e)}")  # Log para debug
+                        print(f"ERRO AGENDAMENTO CLIENTE EXISTENTE: {str(e)}")
+                        print(f"Service ID: {service_id}")
+                        print(f"Employee ID: {employee_id}")
+                        print(f"Date: {appointment_date}")
+                        print(f"Time: {appointment_time}")
                         import traceback
                         traceback.print_exc()
                         messages.error(request, f'Erro ao criar agendamento: {str(e)}')
@@ -116,6 +122,8 @@ def client_booking(request, token):
         else:
             # Link não vinculado - formulário de primeiro agendamento
             if request.method == 'POST':
+                print(f"POST REQUEST RECEBIDO - Cliente novo")
+                print(f"POST data: {dict(request.POST)}")
                 try:
                     with transaction.atomic():
                         # Dados do cliente
@@ -206,7 +214,12 @@ def client_booking(request, token):
                         return redirect('appointments:client_booking', token=token)
 
                 except Exception as e:
-                    print(f"Erro ao processar cliente novo: {str(e)}")  # Log para debug
+                    print(f"ERRO CLIENTE NOVO: {str(e)}")
+                    print(f"Client Name: {request.POST.get('client_name', '')}")
+                    print(f"Client Email: {request.POST.get('client_email', '')}")
+                    print(f"Service ID: {request.POST.get('service_id', '')}")
+                    print(f"Date: {request.POST.get('appointment_date', '')}")
+                    print(f"Time: {request.POST.get('appointment_time', '')}")
                     import traceback
                     traceback.print_exc()
                     messages.error(request, f'Erro ao processar: {str(e)}')
