@@ -270,28 +270,36 @@ def get_available_time_slots(salon, service, date, employee=None):
     if not open_time or not close_time:
         return available_slots
     
+    # Verificar se o salão está aberto (não temporariamente fechado)
+    start_dt_check = timezone.make_aware(datetime.combine(date, open_time))
+    end_dt_check = timezone.make_aware(datetime.combine(date, close_time))
+    salon_open, _ = is_salon_open(salon, start_dt_check, end_dt_check)
+    
+    if not salon_open:
+        return available_slots
+    
     # Gerar slots de 30 em 30 minutos
     current_time = datetime.combine(date, open_time)
     end_time = datetime.combine(date, close_time)
     
     while current_time < end_time:
-        slot_start = current_time
-        slot_end = compute_end_time(date, current_time.time(), service)
+        slot_start_dt = timezone.make_aware(current_time)
+        slot_end_dt = compute_end_time_aware(slot_start_dt, service)
         
         # Verificar se o slot termina antes do fechamento
-        if slot_end <= end_time:
-            # Validar se este horário está disponível
-            is_valid, _, _ = validate_appointment_request(
-                salon=salon,
-                service=service,
-                client=None,  # Não verificar conflito de cliente nesta função
-                start_dt=slot_start,
-                end_dt=slot_end,
-                employee=employee
-            )
-            
-            if is_valid:
-                available_slots.append(current_time.strftime('%H:%M'))
+        if slot_end_dt <= timezone.make_aware(end_time):
+            # Verificar se está no futuro
+            if slot_start_dt > timezone.now():
+                # Verificar se funcionário específico está disponível
+                if employee:
+                    is_available, _ = is_employee_available(employee, slot_start_dt, slot_end_dt)
+                    if is_available:
+                        available_slots.append(current_time.strftime('%H:%M'))
+                else:
+                    # Verificar se há algum funcionário disponível para este serviço
+                    available_employee = find_available_employee(salon, service, slot_start_dt, slot_end_dt)
+                    if available_employee:
+                        available_slots.append(current_time.strftime('%H:%M'))
         
         # Próximo slot (incrementar 30 minutos)
         current_time += timedelta(minutes=30)

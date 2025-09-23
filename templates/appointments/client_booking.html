@@ -172,11 +172,144 @@
                                         <div class="col-6">
                                             <div class="mb-3">
                                                 <label for="appointment_time" class="form-label">Horário *</label>
-                                                <input type="time" name="appointment_time" id="appointment_time" 
-                                                       class="form-control" required>
+                                                <select name="appointment_time" id="appointment_time" class="form-select" required>
+                                                    <option value="">Primeiro selecione o serviço e a data</option>
+                                                </select>
+                                                <div class="form-text">
+                                                    <small id="time-loading" class="text-muted" style="display: none;">
+                                                        <i class="fas fa-spinner fa-spin me-1"></i>Carregando horários...
+                                                    </small>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+
+                                    <script>
+                                    // Função para buscar horários disponíveis
+                                    function loadAvailableSlots() {
+                                        const serviceId = document.getElementById('service_id').value;
+                                        const employeeId = document.getElementById('employee_id').value;
+                                        const appointmentDate = document.getElementById('appointment_date').value;
+                                        const timeSelect = document.getElementById('appointment_time');
+                                        const loadingText = document.getElementById('time-loading');
+                                        
+                                        // Limpar horários anteriores
+                                        timeSelect.innerHTML = '<option value="">Selecione um horário</option>';
+                                        
+                                        if (!serviceId || !appointmentDate) {
+                                            timeSelect.innerHTML = '<option value="">Primeiro selecione o serviço e a data</option>';
+                                            return;
+                                        }
+                                        
+                                        // Mostrar loading
+                                        loadingText.style.display = 'block';
+                                        timeSelect.disabled = true;
+                                        
+                                        // Fazer requisição AJAX
+                                        const url = `{% url 'appointments:get_available_slots' link.token %}?service_id=${serviceId}&employee_id=${employeeId}&date=${appointmentDate}`;
+                                        
+                                        fetch(url)
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                loadingText.style.display = 'none';
+                                                timeSelect.disabled = false;
+                                                
+                                                if (data.error) {
+                                                    timeSelect.innerHTML = '<option value="">Erro ao carregar horários</option>';
+                                                    return;
+                                                }
+                                                
+                                                if (data.slots && data.slots.length > 0) {
+                                                    timeSelect.innerHTML = '<option value="">Selecione um horário</option>';
+                                                    data.slots.forEach(slot => {
+                                                        const option = document.createElement('option');
+                                                        option.value = slot;
+                                                        option.textContent = slot;
+                                                        timeSelect.appendChild(option);
+                                                    });
+                                                } else {
+                                                    timeSelect.innerHTML = '<option value="">Nenhum horário disponível</option>';
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Erro:', error);
+                                                loadingText.style.display = 'none';
+                                                timeSelect.disabled = false;
+                                                timeSelect.innerHTML = '<option value="">Erro ao carregar horários</option>';
+                                            });
+                                    }
+                                    
+                                    // Função para buscar horários disponíveis (cliente novo)
+                                    function loadAvailableSlotsNew() {
+                                        const serviceId = document.getElementById('service_id_new').value;
+                                        const employeeId = document.getElementById('employee_id_new').value;
+                                        const appointmentDate = document.getElementById('appointment_date_new').value;
+                                        const timeSelect = document.getElementById('appointment_time_new');
+                                        const loadingText = document.getElementById('time-loading-new');
+                                        
+                                        // Limpar horários anteriores
+                                        timeSelect.innerHTML = '<option value="">Selecione um horário</option>';
+                                        
+                                        if (!serviceId || !appointmentDate) {
+                                            timeSelect.innerHTML = '<option value="">Primeiro selecione o serviço e a data</option>';
+                                            return;
+                                        }
+                                        
+                                        // Mostrar loading
+                                        loadingText.style.display = 'block';
+                                        timeSelect.disabled = true;
+                                        
+                                        // Fazer requisição AJAX
+                                        const url = `{% url 'appointments:get_available_slots' link.token %}?service_id=${serviceId}&employee_id=${employeeId}&date=${appointmentDate}`;
+                                        
+                                        fetch(url)
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                loadingText.style.display = 'none';
+                                                timeSelect.disabled = false;
+                                                
+                                                if (data.error) {
+                                                    timeSelect.innerHTML = '<option value="">Erro ao carregar horários</option>';
+                                                    return;
+                                                }
+                                                
+                                                if (data.slots && data.slots.length > 0) {
+                                                    timeSelect.innerHTML = '<option value="">Selecione um horário</option>';
+                                                    data.slots.forEach(slot => {
+                                                        const option = document.createElement('option');
+                                                        option.value = slot;
+                                                        option.textContent = slot;
+                                                        timeSelect.appendChild(option);
+                                                    });
+                                                } else {
+                                                    timeSelect.innerHTML = '<option value="">Nenhum horário disponível</option>';
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Erro:', error);
+                                                loadingText.style.display = 'none';
+                                                timeSelect.disabled = false;
+                                                timeSelect.innerHTML = '<option value="">Erro ao carregar horários</option>';
+                                            });
+                                    }
+                                    
+                                    // Adicionar eventos para recarregar horários
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        // Cliente existente
+                                        if (document.getElementById('service_id')) {
+                                            document.getElementById('service_id').addEventListener('change', loadAvailableSlots);
+                                            document.getElementById('employee_id').addEventListener('change', loadAvailableSlots);
+                                            document.getElementById('appointment_date').addEventListener('change', loadAvailableSlots);
+                                        }
+                                        
+                                        // Cliente novo
+                                        if (document.getElementById('service_id_new')) {
+                                            document.getElementById('service_id_new').addEventListener('change', loadAvailableSlotsNew);
+                                            document.getElementById('employee_id_new').addEventListener('change', loadAvailableSlotsNew);
+                                            document.getElementById('appointment_date_new').addEventListener('change', loadAvailableSlotsNew);
+                                        }
+                                    });
+                                    </script>
 
                                     <div class="mb-3">
                                         <label for="notes" class="form-label">Observações</label>
@@ -230,8 +363,8 @@
                             <!-- Dados do Agendamento -->
                             <h6 class="text-primary mb-3">Agendamento</h6>
                             <div class="mb-3">
-                                <label for="service_id" class="form-label">Serviço *</label>
-                                <select name="service_id" id="service_id" class="form-select" required>
+                                <label for="service_id_new" class="form-label">Serviço *</label>
+                                <select name="service_id" id="service_id_new" class="form-select" required>
                                     <option value="">Selecione um serviço</option>
                                     {% for service in services %}
                                         <option value="{{ service.id }}">
@@ -245,8 +378,8 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="employee_id" class="form-label">Profissional</label>
-                                <select name="employee_id" id="employee_id" class="form-select">
+                                <label for="employee_id_new" class="form-label">Profissional</label>
+                                <select name="employee_id" id="employee_id_new" class="form-select">
                                     <option value="">Qualquer profissional disponível</option>
                                     {% for employee in employees %}
                                         <option value="{{ employee.id }}">
@@ -259,16 +392,22 @@
                             <div class="row">
                                 <div class="col-6">
                                     <div class="mb-3">
-                                        <label for="appointment_date" class="form-label">Data *</label>
-                                        <input type="date" name="appointment_date" id="appointment_date" 
+                                        <label for="appointment_date_new" class="form-label">Data *</label>
+                                        <input type="date" name="appointment_date" id="appointment_date_new" 
                                                class="form-control" min="{{ today|date:'Y-m-d' }}" required>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="mb-3">
-                                        <label for="appointment_time" class="form-label">Horário *</label>
-                                        <input type="time" name="appointment_time" id="appointment_time" 
-                                               class="form-control" required>
+                                        <label for="appointment_time_new" class="form-label">Horário *</label>
+                                        <select name="appointment_time" id="appointment_time_new" class="form-select" required>
+                                            <option value="">Primeiro selecione o serviço e a data</option>
+                                        </select>
+                                        <div class="form-text">
+                                            <small id="time-loading-new" class="text-muted" style="display: none;">
+                                                <i class="fas fa-spinner fa-spin me-1"></i>Carregando horários...
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
