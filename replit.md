@@ -4,6 +4,14 @@
 This is a Django-based salon booking system imported from GitHub. The application provides functionality for salon management, appointments, user accounts, and subscriptions. The system supports Portuguese localization and uses SQLite database for development.
 
 ## Recent Changes
+- **2025-09-23**: Implementado sistema robusto de prevenção de conflitos de agendamentos
+  - Criado módulo centralizado appointments/utils/scheduling.py com validações abrangentes
+  - Adicionados campos de controle de status do salão (is_temporarily_closed, closed_until, closure_note) 
+  - Corrigidos bugs críticos de timezone (comparações naive vs timezone-aware)
+  - Implementadas proteções contra race conditions com select_for_update() em transações atômicas
+  - Criadas interfaces de usuário para controle de status do salão pelo proprietário
+  - Atualizados templates para bloquear agendamentos quando salão está fechado
+  - **NOTA IMPORTANTE**: Para produção, usar PostgreSQL com exclusion constraints para garantir prevenção completa de agendamentos sobrepostos
 - **2025-09-22**: Initial import and setup for Replit environment
   - Restructured Django project directory (created salon_booking/ package)
   - Installed Python 3.11, Django 5.2.6, and Pillow

@@ -15,6 +15,11 @@ def compute_end_time(start_date, start_time, service):
     return end_datetime
 
 
+def compute_end_time_aware(start_dt, service):
+    """Calcula o horário de término timezone-aware baseado na duração do serviço"""
+    return start_dt + timedelta(minutes=service.duration)
+
+
 def overlaps(a_start, a_end, b_start, b_end):
     """Verifica se dois intervalos de tempo se sobrepõem"""
     return a_start < b_end and b_start < a_end
@@ -28,9 +33,15 @@ def is_within_salon_hours(salon, start_dt, end_dt):
     if not open_time or not close_time:
         return False, "Salão não funciona neste dia da semana"
     
-    # Converter para datetime para comparação
-    salon_open = datetime.combine(start_dt.date(), open_time)
-    salon_close = datetime.combine(start_dt.date(), close_time)
+    # Converter para timezone-aware usando o mesmo timezone do start_dt
+    salon_open = timezone.make_aware(
+        datetime.combine(start_dt.date(), open_time),
+        timezone=start_dt.tzinfo
+    )
+    salon_close = timezone.make_aware(
+        datetime.combine(start_dt.date(), close_time),
+        timezone=start_dt.tzinfo
+    )
     
     if start_dt < salon_open:
         return False, f"Salão abre às {open_time.strftime('%H:%M')}"
@@ -72,7 +83,7 @@ def employee_can_perform_service(employee, service):
     return True, ""
 
 
-def is_employee_available(employee, start_dt, end_dt):
+def is_employee_available(employee, start_dt, end_dt, use_locking=False):
     """Verifica se o funcionário está disponível no horário solicitado"""
     if not employee:
         return True, ""
@@ -80,19 +91,25 @@ def is_employee_available(employee, start_dt, end_dt):
     from appointments.models import Appointment
     
     # Buscar agendamentos conflitantes do funcionário
-    conflicting_appointments = Appointment.objects.filter(
+    query = Appointment.objects.filter(
         employee=employee,
         appointment_date=start_dt.date(),
         status__in=['scheduled', 'confirmed']
     )
     
+    # Usar select_for_update para prevenir race conditions se solicitado
+    if use_locking:
+        query = query.select_for_update()
+    
+    conflicting_appointments = query
+    
     for appointment in conflicting_appointments:
-        existing_start = datetime.combine(appointment.appointment_date, appointment.appointment_time)
-        existing_end = compute_end_time(
-            appointment.appointment_date,
-            appointment.appointment_time,
-            appointment.service
+        # Criar datetime timezone-aware para comparação
+        existing_start = timezone.make_aware(
+            datetime.combine(appointment.appointment_date, appointment.appointment_time),
+            timezone=start_dt.tzinfo
         )
+        existing_end = existing_start + timedelta(minutes=appointment.service.duration)
         
         if overlaps(start_dt, end_dt, existing_start, existing_end):
             return False, f"Funcionário já tem agendamento às {appointment.appointment_time.strftime('%H:%M')}"
@@ -100,7 +117,7 @@ def is_employee_available(employee, start_dt, end_dt):
     return True, ""
 
 
-def client_has_conflict(client, salon, start_dt, end_dt, exclude_appointment=None):
+def client_has_conflict(client, salon, start_dt, end_dt, exclude_appointment=None, use_locking=False):
     """Verifica se o cliente já tem agendamento conflitante"""
     from appointments.models import Appointment
     
@@ -114,13 +131,17 @@ def client_has_conflict(client, salon, start_dt, end_dt, exclude_appointment=Non
     if exclude_appointment:
         query = query.exclude(id=exclude_appointment.id)
     
+    # Usar select_for_update para prevenir race conditions se solicitado
+    if use_locking:
+        query = query.select_for_update()
+    
     for appointment in query:
-        existing_start = datetime.combine(appointment.appointment_date, appointment.appointment_time)
-        existing_end = compute_end_time(
-            appointment.appointment_date,
-            appointment.appointment_time,
-            appointment.service
+        # Criar datetime timezone-aware para comparação
+        existing_start = timezone.make_aware(
+            datetime.combine(appointment.appointment_date, appointment.appointment_time),
+            timezone=start_dt.tzinfo
         )
+        existing_end = existing_start + timedelta(minutes=appointment.service.duration)
         
         if overlaps(start_dt, end_dt, existing_start, existing_end):
             return True, f"Cliente já tem agendamento às {appointment.appointment_time.strftime('%H:%M')}"
@@ -151,9 +172,10 @@ def find_available_employee(salon, service, start_dt, end_dt):
     return None
 
 
-def validate_appointment_request(salon, service, client, start_dt, end_dt, employee=None, exclude_appointment=None):
+def validate_appointment_request(salon, service, client, start_dt, end_dt, employee=None, exclude_appointment=None, use_locking=False):
     """
     Valida um pedido de agendamento considerando todas as regras de negócio.
+    Com proteção contra race conditions quando use_locking=True.
     
     Returns:
         Tuple[bool, str, Optional[Employee]]: (sucesso, mensagem_erro, funcionario_atribuido)
@@ -177,7 +199,7 @@ def validate_appointment_request(salon, service, client, start_dt, end_dt, emplo
         if not can_perform:
             return False, error_msg, None
         
-        is_available, error_msg = is_employee_available(employee, start_dt, end_dt)
+        is_available, error_msg = is_employee_available(employee, start_dt, end_dt, use_locking)
         if not is_available:
             return False, error_msg, None
     else:
@@ -185,9 +207,15 @@ def validate_appointment_request(salon, service, client, start_dt, end_dt, emplo
         employee = find_available_employee(salon, service, start_dt, end_dt)
         if not employee:
             return False, "Nenhum funcionário disponível para este horário e serviço", None
+        
+        # Re-verificar disponibilidade com locking se solicitado
+        if use_locking:
+            is_available, error_msg = is_employee_available(employee, start_dt, end_dt, use_locking)
+            if not is_available:
+                return False, error_msg, None
     
     # 6. Verificar conflito com cliente
-    has_conflict, error_msg = client_has_conflict(client, salon, start_dt, end_dt, exclude_appointment)
+    has_conflict, error_msg = client_has_conflict(client, salon, start_dt, end_dt, exclude_appointment, use_locking)
     if has_conflict:
         return False, error_msg, None
     
@@ -207,6 +235,10 @@ def validate_appointment_request(salon, service, client, start_dt, end_dt, emplo
     if employee:
         # Se tem funcionário específico, verificar se ele está livre neste horário exato
         existing_query = existing_query.filter(employee=employee)
+    
+    # Aplicar locking se solicitado
+    if use_locking:
+        existing_query = existing_query.select_for_update()
     
     if existing_query.exists():
         return False, "Este horário já está ocupado", None

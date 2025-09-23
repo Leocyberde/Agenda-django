@@ -61,14 +61,15 @@ def client_booking(request, token):
                             end_dt = compute_end_time(appointment_date_obj, appointment_time_obj, service)
                             end_dt = timezone.make_aware(end_dt)
                             
-                            # Validar agendamento usando lógica centralizada
+                            # Validar agendamento usando lógica centralizada com proteção contra race conditions
                             is_valid, error_msg, assigned_employee = validate_appointment_request(
                                 salon=salon,
                                 service=service,
                                 client=client,
                                 start_dt=start_dt,
                                 end_dt=end_dt,
-                                employee=employee
+                                employee=employee,
+                                use_locking=True
                             )
                             
                             if not is_valid:
