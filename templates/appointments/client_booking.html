@@ -22,9 +22,40 @@
                 <p class="text-muted">{{ salon.address }}, {{ salon.city }} - {{ salon.state }}</p>
             </div>
 
-            {% if is_existing_client %}
-                <!-- Cliente Existente - Histórico e Novo Agendamento -->
-                <div class="row">
+            <!-- Status do Salão -->
+            {% if salon.is_temporarily_closed %}
+                <div class="alert alert-danger text-center mb-4" role="alert">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-store-slash fa-3x"></i>
+                        </div>
+                        <div>
+                            <h4 class="alert-heading mb-2">Salão Temporariamente Fechado</h4>
+                            {% if salon.closed_until %}
+                                <p class="mb-1">
+                                    <strong>Reabrindo em:</strong> {{ salon.closed_until|date:"d/m/Y" }} às {{ salon.closed_until|time:"H:i" }}
+                                </p>
+                            {% else %}
+                                <p class="mb-1">Fechado por tempo indeterminado</p>
+                            {% endif %}
+                            {% if salon.closure_note %}
+                                <p class="mb-0">
+                                    <small><i class="fas fa-info-circle me-1"></i>{{ salon.closure_note }}</small>
+                                </p>
+                            {% endif %}
+                            <hr class="my-2">
+                            <p class="mb-0">
+                                <small>Não é possível fazer novos agendamentos no momento. Tente novamente mais tarde.</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if not salon.is_temporarily_closed %}
+                {% if is_existing_client %}
+                    <!-- Cliente Existente - Histórico e Novo Agendamento -->
+                    <div class="row">
                     <!-- Histórico de Agendamentos -->
                     <div class="col-md-6 mb-4">
                         <div class="card">
@@ -162,8 +193,8 @@
                     </div>
                 </div>
 
-            {% else %}
-                <!-- Cliente Novo - Formulário de Cadastro + Primeiro Agendamento -->
+                {% else %}
+                    <!-- Cliente Novo - Formulário de Cadastro + Primeiro Agendamento -->
                 <div class="card">
                     <div class="card-header">
                         <h5><i class="fas fa-user-plus me-2"></i>Dados e Primeiro Agendamento</h5>
@@ -276,6 +307,7 @@
                         {% endif %}
                     </div>
                 </div>
+                {% endif %}
             {% endif %}
         </div>
     </div>

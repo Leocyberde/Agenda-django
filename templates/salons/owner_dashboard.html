@@ -21,6 +21,60 @@
     </div>
 </div>
 
+<!-- Status do Salão -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-1">
+                            <i class="fas fa-store me-2"></i>Status do Salão
+                        </h5>
+                        {% if salon.is_temporarily_closed %}
+                            <span class="badge bg-danger fs-6 me-2">
+                                <i class="fas fa-times-circle me-1"></i>Fechado
+                            </span>
+                            {% if salon.closed_until %}
+                                <small class="text-muted">
+                                    até {{ salon.closed_until|date:"d/m/Y H:i" }}
+                                </small>
+                            {% else %}
+                                <small class="text-muted">Fechado indefinidamente</small>
+                            {% endif %}
+                            {% if salon.closure_note %}
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>{{ salon.closure_note }}
+                                    </small>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-check-circle me-1"></i>Aberto
+                            </span>
+                            <small class="text-muted">Aceitando agendamentos</small>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <a href="{% url 'salons:manage_salon_status' %}" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-cog me-2"></i>Configurar
+                        </a>
+                        <button type="button" class="btn {% if salon.is_temporarily_closed %}btn-success{% else %}btn-warning{% endif %}" 
+                                onclick="toggleSalonStatus()">
+                            {% if salon.is_temporarily_closed %}
+                                <i class="fas fa-unlock me-2"></i>Reabrir
+                            {% else %}
+                                <i class="fas fa-lock me-2"></i>Fechar
+                            {% endif %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Informações da Assinatura -->
 <div class="row mb-4">
     <div class="col-12">
@@ -246,4 +300,41 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleSalonStatus() {
+    // Desabilitar botão durante requisição
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
+    
+    fetch('{% url "salons:toggle_salon_status" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Recarregar página para mostrar mudanças
+            location.reload();
+        } else {
+            alert('Erro ao alterar status do salão. Tente novamente.');
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro de conexão. Tente novamente.');
+        button.disabled = false;
+        button.innerHTML = originalText;
+    });
+}
+</script>
 {% endblock %}
