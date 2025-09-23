@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from django.urls import reverse
 from subscriptions.views import subscription_required
 from .models import Salon, Service, Employee
-from .forms import SalonForm, ServiceForm, EmployeeForm, EmployeeEditForm
+from .forms import SalonForm, ServiceForm, EmployeeForm, EmployeeEditForm, SalonStatusForm
 from appointments.models import Appointment, LinkAgendamento
 
 @login_required
@@ -479,6 +479,59 @@ def manage_client_links(request):
         'salon': salon,
         'links': links
     })
+
+
+@subscription_required
+def manage_salon_status(request):
+    """Controlar status aberto/fechado do salão"""
+    salon = request.user.salon
+
+    if request.method == 'POST':
+        form = SalonStatusForm(request.POST, instance=salon)
+        if form.is_valid():
+            form.save()
+            
+            if salon.is_temporarily_closed:
+                if salon.closed_until:
+                    messages.success(request, f'Salão fechado até {salon.closed_until.strftime("%d/%m/%Y %H:%M")}')
+                else:
+                    messages.success(request, 'Salão fechado indefinidamente')
+            else:
+                messages.success(request, 'Salão reaberto para agendamentos')
+            
+            return redirect('salons:owner_dashboard')
+    else:
+        form = SalonStatusForm(instance=salon)
+
+    return render(request, 'salons/manage_status.html', {
+        'form': form,
+        'salon': salon
+    })
+
+
+@subscription_required  
+def toggle_salon_status(request):
+    """Toggle rápido do status do salão (AJAX)"""
+    salon = request.user.salon
+    
+    if request.method == 'POST':
+        salon.is_temporarily_closed = not salon.is_temporarily_closed
+        
+        if not salon.is_temporarily_closed:
+            # Se está reabrindo, limpar campos relacionados
+            salon.closed_until = None
+            salon.closure_note = None
+        
+        salon.save()
+        
+        from django.http import JsonResponse
+        return JsonResponse({
+            'success': True,
+            'is_closed': salon.is_temporarily_closed,
+            'message': 'Salão fechado' if salon.is_temporarily_closed else 'Salão aberto'
+        })
+    
+    return JsonResponse({'success': False})
 
 @subscription_required
 def create_client_link(request):

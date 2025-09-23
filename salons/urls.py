@@ -8,6 +8,8 @@ urlpatterns = [
     path('create/', views.create_salon, name='create_salon'),
     path('dashboard/', views.owner_dashboard, name='owner_dashboard'),
     path('edit/', views.edit_salon, name='edit_salon'),
+    path('status/', views.manage_salon_status, name='manage_salon_status'),
+    path('toggle-status/', views.toggle_salon_status, name='toggle_salon_status'),
     
     # Gestão de serviços
     path('services/', views.services_list, name='services_list'),

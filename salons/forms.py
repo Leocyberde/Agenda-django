@@ -24,6 +24,11 @@ class SalonForm(forms.ModelForm):
             'saturday_close': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
             'sunday_open': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
             'sunday_close': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            
+            # Status de funcionamento
+            'is_temporarily_closed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'closed_until': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'closure_note': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Motivo do fechamento (opcional)'}),
         }
 
 class ServiceForm(forms.ModelForm):
@@ -139,3 +144,36 @@ class EmployeeEditForm(forms.ModelForm):
             employee.save()
             self.save_m2m()  # Salvar many-to-many relationships
         return employee
+
+
+class SalonStatusForm(forms.ModelForm):
+    """Formulário específico para controlar status aberto/fechado do salão"""
+    
+    class Meta:
+        model = Salon
+        fields = ['is_temporarily_closed', 'closed_until', 'closure_note']
+        widgets = {
+            'is_temporarily_closed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'closed_until': forms.DateTimeInput(attrs={
+                'class': 'form-control', 
+                'type': 'datetime-local',
+                'placeholder': 'Deixe vazio para fechar indefinidamente'
+            }),
+            'closure_note': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Ex: Reforma, Feriado, Emergência...',
+                'maxlength': 200
+            }),
+        }
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        is_closed = cleaned_data.get('is_temporarily_closed')
+        closed_until = cleaned_data.get('closed_until')
+        
+        if is_closed and closed_until:
+            from django.utils import timezone
+            if closed_until <= timezone.now():
+                raise forms.ValidationError('A data de reabertura deve ser no futuro.')
+        
+        return cleaned_data
