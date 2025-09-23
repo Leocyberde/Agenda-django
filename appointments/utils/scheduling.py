@@ -278,6 +278,13 @@ def get_available_time_slots(salon, service, date, employee=None):
     if not salon_open:
         return available_slots
     
+    # Buscar todos os agendamentos do dia para otimizar consultas
+    existing_appointments = Appointment.objects.filter(
+        salon=salon,
+        appointment_date=date,
+        status__in=['scheduled', 'confirmed']
+    ).select_related('service', 'employee')
+    
     # Gerar slots de 30 em 30 minutos
     current_time = datetime.combine(date, open_time)
     end_time = datetime.combine(date, close_time)
@@ -290,16 +297,56 @@ def get_available_time_slots(salon, service, date, employee=None):
         if slot_end_dt <= timezone.make_aware(end_time):
             # Verificar se está no futuro
             if slot_start_dt > timezone.now():
-                # Verificar se funcionário específico está disponível
+                slot_available = False
+                
                 if employee:
-                    is_available, _ = is_employee_available(employee, slot_start_dt, slot_end_dt)
-                    if is_available:
-                        available_slots.append(current_time.strftime('%H:%M'))
+                    # Verificar se o funcionário específico está disponível
+                    employee_free = True
+                    for appointment in existing_appointments:
+                        if appointment.employee == employee:
+                            existing_start = timezone.make_aware(
+                                datetime.combine(appointment.appointment_date, appointment.appointment_time)
+                            )
+                            existing_end = compute_end_time_aware(existing_start, appointment.service)
+                            
+                            if overlaps(slot_start_dt, slot_end_dt, existing_start, existing_end):
+                                employee_free = False
+                                break
+                    
+                    if employee_free:
+                        # Verificar se funcionário pode realizar o serviço
+                        can_perform, _ = employee_can_perform_service(employee, service)
+                        if can_perform:
+                            slot_available = True
                 else:
-                    # Verificar se há algum funcionário disponível para este serviço
-                    available_employee = find_available_employee(salon, service, slot_start_dt, slot_end_dt)
-                    if available_employee:
-                        available_slots.append(current_time.strftime('%H:%M'))
+                    # Buscar qualquer funcionário disponível para este serviço
+                    from salons.models import Employee
+                    
+                    qualified_employees = Employee.objects.filter(
+                        salon=salon,
+                        is_active=True,
+                        services=service
+                    ).distinct()
+                    
+                    for emp in qualified_employees:
+                        emp_available = True
+                        for appointment in existing_appointments:
+                            if appointment.employee == emp:
+                                existing_start = timezone.make_aware(
+                                    datetime.combine(appointment.appointment_date, appointment.appointment_time)
+                                )
+                                existing_end = compute_end_time_aware(existing_start, appointment.service)
+                                
+                                if overlaps(slot_start_dt, slot_end_dt, existing_start, existing_end):
+                                    emp_available = False
+                                    break
+                        
+                        if emp_available:
+                            slot_available = True
+                            break
+                
+                if slot_available:
+                    available_slots.append(current_time.strftime('%H:%M'))
         
         # Próximo slot (incrementar 30 minutos)
         current_time += timedelta(minutes=30)
