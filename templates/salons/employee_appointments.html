@@ -21,12 +21,31 @@
     </div>
 </div>
 
-<!-- Filtros -->
+<!-- Abas de Navegação -->
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="appointmentTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link {% if view_type == 'upcoming' %}active{% endif %}" 
+                           href="?view=upcoming{% if status_filter %}&status={{ status_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}">
+                            <i class="fas fa-clock me-2"></i>Próximos 
+                            {% if upcoming_count %}<span class="badge bg-primary ms-1">{{ upcoming_count }}</span>{% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link {% if view_type == 'history' %}active{% endif %}" 
+                           href="?view=history{% if status_filter %}&status={{ status_filter }}{% endif %}{% if date_filter %}&date={{ date_filter }}{% endif %}">
+                            <i class="fas fa-history me-2"></i>Histórico 
+                            {% if history_count %}<span class="badge bg-secondary ms-1">{{ history_count }}</span>{% endif %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <div class="card-body">
                 <form method="get" class="row g-3">
+                    <input type="hidden" name="view" value="{{ view_type }}">
                     <div class="col-md-4">
                         <label for="status" class="form-label">Status</label>
                         <select name="status" id="status" class="form-select">
@@ -45,7 +64,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-filter me-1"></i>Filtrar
                             </button>
-                            <a href="{% url 'salons:employee_appointments' %}" class="btn btn-outline-secondary">
+                            <a href="?view={{ view_type }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-times me-1"></i>Limpar
                             </a>
                         </div>
@@ -72,6 +91,7 @@
                                     <th>Horário</th>
                                     <th>Status</th>
                                     <th>Observações</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -103,6 +123,85 @@
                                             <small class="text-muted">-</small>
                                         {% endif %}
                                     </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            {% if appointment.status == 'scheduled' %}
+                                                <form method="post" action="{% url 'salons:employee_manage_appointment' appointment.id %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="confirm">
+                                                    <button type="submit" class="btn btn-outline-success" title="Confirmar">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+
+                                            {% if appointment.status in 'scheduled,confirmed' and appointment.appointment_date >= today %}
+                                                <button class="btn btn-outline-primary btn-sm" title="Reagendar" 
+                                                        data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ appointment.id }}">
+                                                    <i class="fas fa-calendar-alt"></i>
+                                                </button>
+                                            {% endif %}
+
+                                            {% if appointment.status in 'scheduled,confirmed' %}
+                                                <form method="post" action="{% url 'salons:employee_manage_appointment' appointment.id %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="complete">
+                                                    <button type="submit" class="btn btn-outline-primary" title="Marcar como concluído">
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+
+                                            {% if appointment.status != 'cancelled' and appointment.status != 'completed' %}
+                                                <form method="post" action="{% url 'salons:employee_manage_appointment' appointment.id %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="cancel">
+                                                    <button type="submit" class="btn btn-outline-danger" title="Cancelar"
+                                                            onclick="return confirm('Tem certeza que deseja cancelar este agendamento?')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Modal de Reagendamento -->
+                                        {% if appointment.status in 'scheduled,confirmed' and appointment.appointment_date >= today %}
+                                        <div class="modal fade" id="rescheduleModal{{ appointment.id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Reagendar Agendamento</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <form method="post" action="{% url 'salons:employee_manage_appointment' appointment.id %}" onsubmit="return confirmReschedule(this);">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="action" value="reschedule">
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Nova Data</label>
+                                                                <input type="date" name="rescheduled_date" class="form-control" 
+                                                                       min="{{ today|date:'Y-m-d' }}" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Novo Horário</label>
+                                                                <input type="time" name="rescheduled_time" class="form-control" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Motivo</label>
+                                                                <textarea name="rescheduled_reason" class="form-control" rows="3" 
+                                                                          placeholder="Motivo do reagendamento..."></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                            <button type="submit" class="btn btn-primary">Propor Reagendamento</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -127,4 +226,37 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmReschedule(form) {
+    // Fechar o modal antes de submeter
+    const modalId = form.closest('.modal').id;
+    const modalElement = document.getElementById(modalId);
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+        modal.hide();
+    }
+    return true;
+}
+
+// Garantir que os modais fechem corretamente
+document.addEventListener('DOMContentLoaded', function() {
+    // Fechar todos os modais quando a página carregar
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(function(modal) {
+        modal.addEventListener('hidden.bs.modal', function() {
+            // Remove qualquer backdrop residual
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+
+            // Remove classe modal-open do body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        });
+    });
+});
+</script>
 {% endblock %}

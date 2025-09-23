@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-import secrets
 
 class Salon(models.Model):
     name = models.CharField(max_length=100, verbose_name="Nome do Salão")
@@ -77,24 +76,4 @@ class Employee(models.Model):
         verbose_name_plural = "Funcionários"
         unique_together = ['user', 'salon']
 
-class BookingToken(models.Model):
-    salon = models.OneToOneField(Salon, on_delete=models.CASCADE, related_name='booking_token', verbose_name="Salão")
-    token = models.CharField(max_length=32, unique=True, verbose_name="Token de agendamento")
-    is_active = models.BooleanField(default=True, verbose_name="Ativo")
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    def save(self, *args, **kwargs):
-        if not self.token:
-            self.token = secrets.token_urlsafe(16)[:32]
-        super().save(*args, **kwargs)
-    
-    def __str__(self):
-        return f"Token de agendamento - {self.salon.name}"
-    
-    def get_booking_url(self):
-        from django.urls import reverse
-        return reverse('salons:public_booking', kwargs={'token': self.token})
-    
-    class Meta:
-        verbose_name = "Token de Agendamento"
-        verbose_name_plural = "Tokens de Agendamento"
+

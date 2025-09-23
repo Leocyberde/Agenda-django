@@ -172,31 +172,51 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         {% if user.profile.user_type == 'owner' %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="ownerMenuDropdown" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-bars me-1"></i>Menu do Comerciante
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'salons:owner_dashboard' %}">
+                                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                                 </a>
-                                <ul class="dropdown-menu owner-dropdown">
-                                    <li><a class="dropdown-item" href="{% url 'salons:owner_dashboard' %}">
-                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="{% url 'salons:edit_salon' %}">
-                                        <i class="fas fa-store me-2"></i>Meu Salão
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="{% url 'salons:services_list' %}">
-                                        <i class="fas fa-list me-2"></i>Serviços
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="{% url 'salons:appointments_list' %}">
-                                        <i class="fas fa-calendar-alt me-2"></i>Agendamentos
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="{% url 'subscriptions:detail' %}">
-                                        <i class="fas fa-crown me-2"></i>Assinatura
-                                    </a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Sair do Sistema
-                                    </a></li>
-                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'salons:edit_salon' %}">
+                                    <i class="fas fa-store me-1"></i>Meu Salão
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'salons:services_list' %}">
+                                    <i class="fas fa-list me-1"></i>Serviços
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'salons:employees_list' %}">
+                                    <i class="fas fa-users me-1"></i>Funcionários
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'salons:manage_client_links' %}">
+                                    <i class="fas fa-link me-1"></i>Links Clientes
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'salons:appointments_list' %}">
+                                    <i class="fas fa-calendar-alt me-1"></i>Agendamentos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'subscriptions:detail' %}">
+                                    <i class="fas fa-crown me-1"></i>Assinatura
+                                </a>
+                            </li>
+                        {% elif user.profile.user_type == 'employee' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'salons:employee_dashboard' %}">
+                                    <i class="fas fa-tachometer-alt me-1"></i>Meu Painel
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'salons:employee_appointments' %}">
+                                    <i class="fas fa-calendar-alt me-1"></i>Meus Agendamentos
+                                </a>
                             </li>
                         {% endif %}
                         <li class="nav-item dropdown">
@@ -207,11 +227,6 @@
                                 <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
                                     <i class="fas fa-user-edit me-2"></i>Meu Perfil
                                 </a></li>
-                                {% if user.profile.user_type == 'owner' %}
-                                    <li><a class="dropdown-item" href="{% url 'subscriptions:detail' %}">
-                                        <i class="fas fa-crown me-2"></i>Minha Assinatura
-                                    </a></li>
-                                {% endif %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">
                                     <i class="fas fa-sign-out-alt me-2"></i>Sair

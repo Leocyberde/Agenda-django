@@ -1,9 +1,11 @@
+
 from django.urls import path
 from . import views
 
 app_name = 'appointments'
 
 urlpatterns = [
-    # URLs temporárias - serão implementadas na próxima fase
+    path('link/<uuid:token>/', views.client_booking, name='client_booking'),
+    path('link/<uuid:token>/confirm-reschedule/<int:appointment_id>/', views.confirm_reschedule, name='confirm_reschedule'),
+    path('link/<uuid:token>/reject-reschedule/<int:appointment_id>/', views.reject_reschedule, name='reject_reschedule'),
 ]
-

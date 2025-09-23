@@ -16,22 +16,22 @@
 {% endif %}
 
 <!-- Cabeçalho do Salão -->
-<div class="text-center mb-4">
-        {% if salon.photo %}
-            <div class="mb-3">
-                <img src="{{ salon.photo.url }}" alt="{{ salon.name }}" class="img-fluid rounded shadow" style="max-height: 200px;">
-            </div>
-        {% endif %}
-        <h1 class="h3 text-primary">{{ salon.name }}</h1>
-        <p class="text-muted">{{ salon.address }}, {{ salon.city }} - {{ salon.state }}</p>
-        <p class="text-muted">{{ salon.phone }}</p>
-    </div>
+<div class="salon-header">
+    <h1>{{ salon.name }}</h1>
+    <p>
+        <i class="fas fa-map-marker-alt me-2"></i>{{ salon.address }}, {{ salon.city }} - {{ salon.state }}
+    </p>
+    <p>
+        <i class="fas fa-phone me-2"></i>{{ salon.phone }} | 
+        <i class="fas fa-envelope me-2"></i>{{ salon.email }}
+    </p>
+</div>
 
 <!-- Conteúdo do Agendamento -->
 <div class="booking-content">
     <form method="post" id="bookingForm" novalidate>
         {% csrf_token %}
-
+        
         <!-- Dados do Cliente -->
         <div class="mb-4">
             <h4 class="section-title">
@@ -250,11 +250,11 @@ function selectService(serviceId) {
     document.querySelectorAll('.service-card').forEach(card => {
         card.classList.remove('selected');
     });
-
+    
     // Seleciona o serviço
     const radio = document.getElementById('service_' + serviceId);
     radio.checked = true;
-
+    
     // Adiciona visual de selecionado
     radio.closest('.service-card').classList.add('selected');
 }
@@ -265,12 +265,12 @@ function selectProfessional(employeeId) {
     document.querySelectorAll('.professional-card').forEach(card => {
         card.classList.remove('selected');
     });
-
+    
     // Seleciona o profissional
     const radioId = employeeId === '' ? 'employee_any' : 'employee_' + employeeId;
     const radio = document.getElementById(radioId);
     radio.checked = true;
-
+    
     // Adiciona visual de selecionado
     radio.closest('.professional-card').classList.add('selected');
 }
@@ -279,7 +279,7 @@ function selectProfessional(employeeId) {
 document.getElementById('bookingForm').addEventListener('submit', function(e) {
     const requiredFields = this.querySelectorAll('[required]');
     let isValid = true;
-
+    
     requiredFields.forEach(field => {
         if (!field.value.trim()) {
             isValid = false;
@@ -288,7 +288,7 @@ document.getElementById('bookingForm').addEventListener('submit', function(e) {
             field.classList.remove('is-invalid');
         }
     });
-
+    
     if (!isValid) {
         e.preventDefault();
         alert('Por favor, preencha todos os campos obrigatórios.');

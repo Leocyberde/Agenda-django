@@ -80,8 +80,11 @@ def dashboard_view(request):
             return redirect('salons:owner_dashboard')
         else:
             return redirect('salons:create_salon')
+    elif profile.user_type == 'employee':
+        return redirect('salons:employee_dashboard')
     else:
-        return redirect('appointments:client_dashboard')
+        # Para clientes, redirecionar para a página inicial por enquanto
+        return redirect('core:landing_page')
 
 @login_required
 def subscription_status(request):
