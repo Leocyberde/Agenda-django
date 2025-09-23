@@ -10,6 +10,7 @@ from datetime import datetime, date
 from .models import LinkAgendamento, Appointment
 from salons.models import Salon, Service, Employee
 from accounts.models import UserProfile
+from .utils.scheduling import validate_appointment_request, compute_end_time
 
 def client_booking(request, token):
     """Página de agendamento do cliente via link único"""
@@ -42,57 +43,52 @@ def client_booking(request, token):
                         return redirect('appointments:client_booking', token=token)
                     
                     try:
-                        service = Service.objects.get(id=service_id, salon=salon, is_active=True)
-                        
-                        # Atribuir funcionário
-                        employee = None
-                        if employee_id:
-                            employee = Employee.objects.get(id=employee_id, salon=salon, is_active=True)
-                        else:
-                            # Selecionar funcionário automaticamente
-                            available_employees = salon.employees.filter(
-                                is_active=True,
-                                services=service
-                            ).distinct()
-                            employee = available_employees.first() if available_employees.exists() else None
-                        
-                        # Verificar data/hora
-                        appointment_date_obj = datetime.strptime(appointment_date, '%Y-%m-%d').date()
-                        appointment_time_obj = datetime.strptime(appointment_time, '%H:%M').time()
-                        
-                        if appointment_date_obj < date.today():
-                            messages.error(request, 'Não é possível agendar para datas passadas.')
+                        with transaction.atomic():
+                            service = Service.objects.get(id=service_id, salon=salon, is_active=True)
+                            
+                            # Preparar funcionário se especificado
+                            employee = None
+                            if employee_id:
+                                employee = Employee.objects.get(id=employee_id, salon=salon, is_active=True)
+                            
+                            # Verificar data/hora
+                            appointment_date_obj = datetime.strptime(appointment_date, '%Y-%m-%d').date()
+                            appointment_time_obj = datetime.strptime(appointment_time, '%H:%M').time()
+                            
+                            # Calcular horários de início e fim
+                            start_dt = datetime.combine(appointment_date_obj, appointment_time_obj)
+                            start_dt = timezone.make_aware(start_dt)
+                            end_dt = compute_end_time(appointment_date_obj, appointment_time_obj, service)
+                            end_dt = timezone.make_aware(end_dt)
+                            
+                            # Validar agendamento usando lógica centralizada
+                            is_valid, error_msg, assigned_employee = validate_appointment_request(
+                                salon=salon,
+                                service=service,
+                                client=client,
+                                start_dt=start_dt,
+                                end_dt=end_dt,
+                                employee=employee
+                            )
+                            
+                            if not is_valid:
+                                messages.error(request, error_msg)
+                                return redirect('appointments:client_booking', token=token)
+                            
+                            # Criar agendamento
+                            appointment = Appointment.objects.create(
+                                client=client,
+                                salon=salon,
+                                service=service,
+                                employee=assigned_employee,
+                                appointment_date=appointment_date_obj,
+                                appointment_time=appointment_time_obj,
+                                notes=notes,
+                                status='scheduled'
+                            )
+                            
+                            messages.success(request, 'Agendamento realizado com sucesso!')
                             return redirect('appointments:client_booking', token=token)
-                        
-                        # Verificar conflitos de horário
-                        existing = Appointment.objects.filter(
-                            salon=salon,
-                            appointment_date=appointment_date_obj,
-                            appointment_time=appointment_time_obj,
-                            status__in=['scheduled', 'confirmed']
-                        )
-                        
-                        if employee:
-                            existing = existing.filter(employee=employee)
-                        
-                        if existing.exists():
-                            messages.error(request, 'Este horário já está ocupado. Escolha outro horário.')
-                            return redirect('appointments:client_booking', token=token)
-                        
-                        # Criar agendamento
-                        appointment = Appointment.objects.create(
-                            client=client,
-                            salon=salon,
-                            service=service,
-                            employee=employee,
-                            appointment_date=appointment_date_obj,
-                            appointment_time=appointment_time_obj,
-                            notes=notes,
-                            status='scheduled'
-                        )
-                        
-                        messages.success(request, 'Agendamento realizado com sucesso!')
-                        return redirect('appointments:client_booking', token=token)
                         
                     except Exception as e:
                         messages.error(request, f'Erro ao criar agendamento: {str(e)}')
@@ -164,39 +160,39 @@ def client_booking(request, token):
                         # Criar agendamento
                         service = Service.objects.get(id=service_id, salon=salon, is_active=True)
                         
+                        # Preparar funcionário se especificado
                         employee = None
                         if employee_id:
                             employee = Employee.objects.get(id=employee_id, salon=salon, is_active=True)
-                        else:
-                            available_employees = salon.employees.filter(
-                                is_active=True,
-                                services=service
-                            ).distinct()
-                            employee = available_employees.first() if available_employees.exists() else None
                         
                         appointment_date_obj = datetime.strptime(appointment_date, '%Y-%m-%d').date()
                         appointment_time_obj = datetime.strptime(appointment_time, '%H:%M').time()
                         
-                        # Verificar conflitos
-                        existing = Appointment.objects.filter(
+                        # Calcular horários de início e fim
+                        start_dt = datetime.combine(appointment_date_obj, appointment_time_obj)
+                        start_dt = timezone.make_aware(start_dt)
+                        end_dt = compute_end_time(appointment_date_obj, appointment_time_obj, service)
+                        end_dt = timezone.make_aware(end_dt)
+                        
+                        # Validar agendamento usando lógica centralizada
+                        is_valid, error_msg, assigned_employee = validate_appointment_request(
                             salon=salon,
-                            appointment_date=appointment_date_obj,
-                            appointment_time=appointment_time_obj,
-                            status__in=['scheduled', 'confirmed']
+                            service=service,
+                            client=client,
+                            start_dt=start_dt,
+                            end_dt=end_dt,
+                            employee=employee
                         )
                         
-                        if employee:
-                            existing = existing.filter(employee=employee)
-                        
-                        if existing.exists():
-                            messages.error(request, 'Este horário já está ocupado. Escolha outro horário.')
+                        if not is_valid:
+                            messages.error(request, error_msg)
                             return redirect('appointments:client_booking', token=token)
                         
                         appointment = Appointment.objects.create(
                             client=client,
                             salon=salon,
                             service=service,
-                            employee=employee,
+                            employee=assigned_employee,
                             appointment_date=appointment_date_obj,
                             appointment_time=appointment_time_obj,
                             notes=notes,
