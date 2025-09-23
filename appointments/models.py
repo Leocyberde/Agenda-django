@@ -66,6 +66,12 @@ class Appointment(models.Model):
         verbose_name = "Agendamento"
         verbose_name_plural = "Agendamentos"
         ordering = ['appointment_date', 'appointment_time']
+        indexes = [
+            models.Index(fields=['salon', 'appointment_date']),
+            models.Index(fields=['employee', 'appointment_date']),
+            models.Index(fields=['status']),
+            models.Index(fields=['appointment_date', 'appointment_time']),
+        ]
         constraints = [
             models.UniqueConstraint(
                 fields=['salon', 'employee', 'appointment_date', 'appointment_time'],

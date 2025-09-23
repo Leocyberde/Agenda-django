@@ -21,6 +21,11 @@ class Salon(models.Model):
     sunday_open = models.TimeField(blank=True, null=True, verbose_name="Domingo - Abertura")
     sunday_close = models.TimeField(blank=True, null=True, verbose_name="Domingo - Fechamento")
 
+    # Status de funcionamento
+    is_temporarily_closed = models.BooleanField(default=False, verbose_name="Temporariamente Fechado")
+    closed_until = models.DateTimeField(blank=True, null=True, verbose_name="Fechado até")
+    closure_note = models.CharField(max_length=200, blank=True, null=True, verbose_name="Motivo do Fechamento")
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -36,6 +41,36 @@ class Salon(models.Model):
         elif day_of_week == 6:  # Domingo (6)
             return self.sunday_open, self.sunday_close
         return None, None
+    
+    def is_open_at(self, date_time):
+        """Verifica se o salão está aberto em um determinado momento"""
+        from django.utils import timezone
+        
+        # Verificar se está temporariamente fechado
+        if self.is_temporarily_closed:
+            # Se tem data limite, verificar se ainda está dentro do período
+            if self.closed_until:
+                if date_time < self.closed_until:
+                    return False
+                else:
+                    # Período de fechamento expirou, remover status
+                    self.is_temporarily_closed = False
+                    self.closed_until = None
+                    self.closure_note = None
+                    self.save()
+            else:
+                # Fechado indefinidamente
+                return False
+        
+        # Verificar horário de funcionamento
+        day_of_week = date_time.weekday()
+        open_time, close_time = self.get_working_hours(day_of_week)
+        
+        if not open_time or not close_time:
+            return False  # Não funciona neste dia
+            
+        current_time = date_time.time()
+        return open_time <= current_time <= close_time
 
     class Meta:
         verbose_name = "Salão"
