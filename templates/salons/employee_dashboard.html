@@ -69,6 +69,81 @@
     </div>
 </div>
 
+<!-- Seção de Ganhos (apenas para funcionários que recebem por porcentagem) -->
+{% if employee.payment_type == 'percentage' and earnings_by_service %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-money-bill-wave me-2"></i>Meus Ganhos - {{ current_month }}/{{ current_year }}
+                </h5>
+                <div class="badge bg-success fs-6">
+                    Total: R$ {{ total_monthly_earnings|floatformat:2 }}
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Você recebe {{ employee.commission_percentage|floatformat:0 }}% sobre cada serviço realizado
+                </p>
+                
+                <div class="row">
+                    {% for earning in earnings_by_service %}
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary">{{ earning.service.name }}</h6>
+                                <div class="small text-muted mb-2">
+                                    <div>Preço do serviço: R$ {{ earning.price|floatformat:2 }}</div>
+                                    <div>Sua comissão: {{ earning.commission_rate|floatformat:0 }}%</div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-end">
+                                    <div>
+                                        <div class="text-success fw-bold">
+                                            R$ {{ earning.earning_per_service|floatformat:2 }}
+                                        </div>
+                                        <div class="small text-muted">por serviço</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold">{{ earning.count }} serviços</div>
+                                        <div class="text-primary">
+                                            = R$ {{ earning.total_earned|floatformat:2 }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% elif employee.payment_type == 'percentage' %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-money-bill-wave me-2"></i>Meus Ganhos - {{ current_month }}/{{ current_year }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-4">
+                    <i class="fas fa-chart-line display-4 text-muted mb-3"></i>
+                    <p class="text-muted mb-2">Nenhum serviço concluído este mês ainda</p>
+                    <p class="small text-muted">
+                        Você recebe {{ employee.commission_percentage|floatformat:0 }}% sobre cada serviço realizado
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="row">
     <!-- Meus Próximos Agendamentos -->
     <div class="col-lg-8 mb-4">

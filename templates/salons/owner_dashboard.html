@@ -192,6 +192,88 @@
     </div>
 </div>
 
+<!-- Resumo Financeiro -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Resumo Financeiro - Mês Atual
+                </h5>
+                <a href="{% url 'salons:financial_dashboard' %}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-plus me-2"></i>Gerenciar Finanças
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="bg-success-light rounded-circle p-3">
+                                    <i class="fas fa-arrow-up text-success"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Receitas</h6>
+                                <h4 class="text-success mb-0">R$ {{ financial_summary.current_income|floatformat:2 }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="bg-danger-light rounded-circle p-3">
+                                    <i class="fas fa-arrow-down text-danger"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Despesas</h6>
+                                <h4 class="text-danger mb-0">R$ {{ financial_summary.current_expenses|floatformat:2 }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="bg-info-light rounded-circle p-3">
+                                    <i class="fas fa-users text-info"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Funcionários</h6>
+                                <h4 class="text-info mb-0">R$ {{ financial_summary.employee_costs|floatformat:2 }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="bg-{% if financial_summary.net_result >= 0 %}primary{% else %}warning{% endif %}-light rounded-circle p-3">
+                                    <i class="fas fa-balance-scale text-{% if financial_summary.net_result >= 0 %}primary{% else %}warning{% endif %}"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Resultado</h6>
+                                <h4 class="text-{% if financial_summary.net_result >= 0 %}primary{% else %}warning{% endif %} mb-0">
+                                    R$ {{ financial_summary.net_result|floatformat:2 }}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Custo de funcionários representa salários estimados (mensal/semanal/diário). Comissionados não são incluídos.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <!-- Próximos Agendamentos -->
     <div class="col-lg-8 mb-4">

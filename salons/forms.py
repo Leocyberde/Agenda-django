@@ -66,10 +66,25 @@ class EmployeeForm(forms.ModelForm):
     
     class Meta:
         model = Employee
-        fields = ['services', 'is_active']
+        fields = ['services', 'is_active', 'payment_type', 'salary_amount', 'commission_percentage']
         widgets = {
             'services': forms.CheckboxSelectMultiple(),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'payment_type': forms.Select(attrs={'class': 'form-control', 'id': 'id_payment_type'}),
+            'salary_amount': forms.NumberInput(attrs={
+                'class': 'form-control', 
+                'step': '0.01',
+                'id': 'id_salary_amount',
+                'placeholder': 'Digite o valor'
+            }),
+            'commission_percentage': forms.NumberInput(attrs={
+                'class': 'form-control', 
+                'step': '0.01',
+                'max': '100',
+                'min': '0',
+                'id': 'id_commission_percentage',
+                'placeholder': 'Ex: 15.50'
+            }),
         }
     
     def __init__(self, *args, **kwargs):
@@ -102,10 +117,25 @@ class EmployeeEditForm(forms.ModelForm):
     
     class Meta:
         model = Employee
-        fields = ['services', 'is_active']
+        fields = ['services', 'is_active', 'payment_type', 'salary_amount', 'commission_percentage']
         widgets = {
             'services': forms.CheckboxSelectMultiple(),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'payment_type': forms.Select(attrs={'class': 'form-control', 'id': 'id_payment_type_edit'}),
+            'salary_amount': forms.NumberInput(attrs={
+                'class': 'form-control', 
+                'step': '0.01',
+                'id': 'id_salary_amount_edit',
+                'placeholder': 'Digite o valor'
+            }),
+            'commission_percentage': forms.NumberInput(attrs={
+                'class': 'form-control', 
+                'step': '0.01',
+                'max': '100',
+                'min': '0',
+                'id': 'id_commission_percentage_edit',
+                'placeholder': 'Ex: 15.50'
+            }),
         }
     
     def __init__(self, *args, **kwargs):

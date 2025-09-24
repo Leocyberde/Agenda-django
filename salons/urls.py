@@ -37,6 +37,11 @@ urlpatterns = [
     path('client-links/<int:link_id>/toggle/', views.toggle_client_link, name='toggle_client_link'),
     path('appointments/<int:appointment_id>/manage/', views.manage_appointment_status, name='manage_appointment_status'),
     
+    # Gerenciamento Financeiro
+    path('finances/', views.financial_dashboard, name='financial_dashboard'),
+    path('finances/add/', views.add_financial_record, name='add_financial_record'),
+    path('finances/records/', views.financial_records_list, name='financial_records_list'),
+    path('finances/generate-employee-expenses/', views.generate_employee_expenses, name='generate_employee_expenses'),
     
 ]
 

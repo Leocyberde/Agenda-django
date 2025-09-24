@@ -95,9 +95,39 @@ class Service(models.Model):
         ordering = ['name']
 
 class Employee(models.Model):
+    PAYMENT_CHOICES = [
+        ('monthly', 'Mensal'),
+        ('weekly', 'Semanal'),
+        ('daily', 'Diário'),
+        ('percentage', 'Porcentagem por Serviço'),
+    ]
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee_profile', verbose_name="Usuário")
     salon = models.ForeignKey(Salon, on_delete=models.CASCADE, related_name='employees', verbose_name="Salão")
     services = models.ManyToManyField(Service, blank=True, verbose_name="Serviços que pode executar")
+    
+    # Campos de pagamento
+    payment_type = models.CharField(
+        max_length=10, 
+        choices=PAYMENT_CHOICES, 
+        default='monthly', 
+        verbose_name="Tipo de Pagamento"
+    )
+    salary_amount = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=0.00, 
+        verbose_name="Valor do Salário",
+        help_text="Valor mensal, semanal ou diário conforme tipo escolhido"
+    )
+    commission_percentage = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        default=0.00, 
+        verbose_name="Porcentagem de Comissão (%)",
+        help_text="Porcentagem sobre cada serviço realizado (apenas se tipo for 'Porcentagem por Serviço')"
+    )
+    
     is_active = models.BooleanField(default=True, verbose_name="Ativo")
     hire_date = models.DateField(auto_now_add=True, verbose_name="Data de contratação")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -105,8 +135,94 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} - {self.salon.name}"
+    
+    def calculate_monthly_cost(self):
+        """Calcula o custo mensal estimado baseado no tipo de pagamento"""
+        if self.payment_type == 'monthly':
+            return self.salary_amount
+        elif self.payment_type == 'weekly':
+            return self.salary_amount * 4  # Aproximação: 4 semanas por mês
+        elif self.payment_type == 'daily':
+            return self.salary_amount * 22  # Aproximação: 22 dias úteis por mês
+        elif self.payment_type == 'percentage':
+            # Para porcentagem, retornamos 0 pois depende dos serviços realizados
+            return 0.00
+        return 0.00
+    
+    def get_payment_type_display_friendly(self):
+        """Retorna descrição amigável do tipo de pagamento"""
+        payment_dict = {
+            'monthly': f"Mensal: R$ {self.salary_amount:.2f}",
+            'weekly': f"Semanal: R$ {self.salary_amount:.2f}",
+            'daily': f"Diário: R$ {self.salary_amount:.2f}",
+            'percentage': f"Comissão: {self.commission_percentage:g}% por serviço"
+        }
+        return payment_dict.get(self.payment_type, "Não definido")
 
     class Meta:
         verbose_name = "Funcionário"
         verbose_name_plural = "Funcionários"
         unique_together = ['user', 'salon']
+
+
+class FinancialRecord(models.Model):
+    TRANSACTION_TYPES = [
+        ('income', 'Receita'),
+        ('expense', 'Despesa'),
+    ]
+    
+    EXPENSE_CATEGORIES = [
+        ('employee_salary', 'Salário de Funcionário'),
+        ('employee_commission', 'Comissão de Funcionário'),
+        ('rent', 'Aluguel'),
+        ('utilities', 'Contas (Água, Luz, Internet)'),
+        ('products', 'Produtos e Materiais'),
+        ('maintenance', 'Manutenção'),
+        ('marketing', 'Marketing'),
+        ('other', 'Outros'),
+    ]
+    
+    INCOME_CATEGORIES = [
+        ('service', 'Serviços Prestados'),
+        ('products_sale', 'Venda de Produtos'),
+        ('other_income', 'Outras Receitas'),
+    ]
+    
+    salon = models.ForeignKey(Salon, on_delete=models.CASCADE, related_name='financial_records', verbose_name="Salão")
+    transaction_type = models.CharField(max_length=7, choices=TRANSACTION_TYPES, verbose_name="Tipo de Transação")
+    category = models.CharField(max_length=20, verbose_name="Categoria")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor")
+    description = models.CharField(max_length=200, verbose_name="Descrição")
+    
+    # Data de referência da transação
+    reference_month = models.PositiveIntegerField(verbose_name="Mês de Referência (1-12)")
+    reference_year = models.PositiveIntegerField(verbose_name="Ano de Referência")
+    
+    # Relacionamentos opcionais para rastreabilidade
+    related_employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Funcionário Relacionado")
+    related_appointment = models.ForeignKey('appointments.Appointment', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Agendamento Relacionado")
+    
+    # Campos de auditoria
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Criado por")
+    
+    def __str__(self):
+        tipo = "Receita" if self.transaction_type == 'income' else "Despesa"
+        return f"{self.salon.name} - {tipo}: R$ {self.amount:.2f} ({self.reference_month}/{self.reference_year})"
+    
+    def get_category_display_friendly(self):
+        """Retorna a descrição amigável da categoria"""
+        if self.transaction_type == 'expense':
+            categories = dict(self.EXPENSE_CATEGORIES)
+        else:
+            categories = dict(self.INCOME_CATEGORIES)
+        return categories.get(self.category, self.category)
+    
+    class Meta:
+        verbose_name = "Registro Financeiro"
+        verbose_name_plural = "Registros Financeiros"
+        ordering = ['-reference_year', '-reference_month', '-created_at']
+        indexes = [
+            models.Index(fields=['salon', 'reference_year', 'reference_month']),
+            models.Index(fields=['transaction_type', 'category']),
+        ]
