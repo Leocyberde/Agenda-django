@@ -18,10 +18,27 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
+from django.http import JsonResponse
+from core.views import service_worker
+import json
+import os
+
+def manifest_view(request):
+    """Serve the manifest.json file"""
+    try:
+        manifest_path = os.path.join(settings.BASE_DIR, 'manifest.json')
+        with open(manifest_path, 'r') as f:
+            manifest_data = json.load(f)
+        return JsonResponse(manifest_data, content_type='application/manifest+json')
+    except FileNotFoundError:
+        return JsonResponse({'error': 'Manifest not found'}, status=404)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin-panel/', include('admin_panel.urls')),
+    path('manifest.json', manifest_view, name='manifest'),
+    path('sw.js', service_worker, name='service_worker'),  # Service worker from root for proper PWA scope
     path('', include('core.urls')),
     path('accounts/', include('accounts.urls')),
     path('subscriptions/', include('subscriptions.urls')),

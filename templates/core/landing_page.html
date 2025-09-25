@@ -1,362 +1,1123 @@
+
 {% extends 'base/base.html' %}
 
-{% block title %}Sistema de Agendamento para Salões e Barbearias{% endblock %}
+{% block title %}Sistema de Agendamento Ultra-Moderno - Revolução Digital{% endblock %}
 
 {% block content %}
-<style>
-    .hero-section {
-        background: linear-gradient(135deg, #3498db, #85c1e9);
-        color: white;
-        padding: 80px 0;
-        margin: -30px -30px 30px -30px;
-        text-align: center;
-    }
-    
-    .feature-card {
-        transition: transform 0.3s;
-        height: 100%;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-10px);
-    }
-    
-    .pricing-card {
-        border: 2px solid #e9ecef;
-        transition: all 0.3s;
-    }
-    
-    .pricing-card:hover {
-        border-color: #3498db;
-        transform: translateY(-5px);
-    }
-    
-    .pricing-card.featured {
-        border-color: #3498db;
-        transform: scale(1.05);
-    }
-    
-    .btn-cta {
-        background: linear-gradient(135deg, #28a745, #20c997);
-        border: none;
-        padding: 15px 30px;
-        font-size: 18px;
-        font-weight: bold;
-        border-radius: 50px;
-        transition: all 0.3s;
-    }
-    
-    .btn-cta:hover {
-        background: linear-gradient(135deg, #20c997, #28a745);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-    }
-    
-    .stats-section {
-        background: #f8f9fa;
-        padding: 60px 0;
-        margin: 60px -30px;
-    }
-</style>
-
-<!-- Hero Section -->
+<!-- Hero Section Ultra Modern -->
 <div class="hero-section">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <h1 class="display-4 fw-bold mb-4">
-                    <i class="fas fa-cut me-3"></i>
-                    Sistema de Agendamento Profissional
-                </h1>
-                <p class="lead mb-5">
-                    Transforme seu salão ou barbearia com nossa plataforma completa de agendamentos online. 
-                    Gerencie clientes, serviços e horários de forma simples e eficiente.
-                </p>
-                <div class="d-flex justify-content-center gap-3 flex-wrap">
-                    <a href="#planos" class="btn btn-cta btn-success btn-lg">
-                        <i class="fas fa-rocket me-2"></i>Começar Agora
-                    </a>
-                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-sign-in-alt me-2"></i>Já tenho conta
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Features Section -->
-<div class="container my-5">
-    <div class="row">
-        <div class="col-12 text-center mb-5">
-            <h2 class="display-5 fw-bold text-primary">Por que escolher nosso sistema?</h2>
-            <p class="lead text-muted">Recursos pensados especialmente para salões e barbearias</p>
-        </div>
-    </div>
-    
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card feature-card h-100 border-0 shadow">
-                <div class="card-body text-center p-4">
-                    <div class="display-4 text-primary mb-3">
-                        <i class="fas fa-calendar-check"></i>
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <div class="badge badge-glow mb-4">
+                        <i class="fas fa-rocket me-2"></i>
+                        Nova Era Digital
                     </div>
-                    <h5 class="card-title">Agendamentos Online</h5>
-                    <p class="card-text">
-                        Seus clientes podem agendar serviços 24/7 através de uma interface simples e intuitiva.
+                    <h1 class="hero-title mb-4">
+                        <span class="gradient-text">Revolução</span> no
+                        <br>Agendamento Digital
+                    </h1>
+                    <p class="hero-subtitle mb-5">
+                        Transforme seu salão com nossa plataforma de última geração. 
+                        Inteligência artificial, design futurista e experiência incomparável.
                     </p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card feature-card h-100 border-0 shadow">
-                <div class="card-body text-center p-4">
-                    <div class="display-4 text-primary mb-3">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h5 class="card-title">Gestão de Clientes</h5>
-                    <p class="card-text">
-                        Mantenha um cadastro completo dos seus clientes com histórico de serviços e preferências.
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card feature-card h-100 border-0 shadow">
-                <div class="card-body text-center p-4">
-                    <div class="display-4 text-primary mb-3">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h5 class="card-title">Relatórios e Estatísticas</h5>
-                    <p class="card-text">
-                        Acompanhe o desempenho do seu negócio com relatórios detalhados e estatísticas em tempo real.
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card feature-card h-100 border-0 shadow">
-                <div class="card-body text-center p-4">
-                    <div class="display-4 text-primary mb-3">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h5 class="card-title">100% Responsivo</h5>
-                    <p class="card-text">
-                        Acesse de qualquer dispositivo - computador, tablet ou smartphone com total facilidade.
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card feature-card h-100 border-0 shadow">
-                <div class="card-body text-center p-4">
-                    <div class="display-4 text-primary mb-3">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h5 class="card-title">Horários Flexíveis</h5>
-                    <p class="card-text">
-                        Configure seus horários de funcionamento e disponibilidade de forma personalizada.
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card feature-card h-100 border-0 shadow">
-                <div class="card-body text-center p-4">
-                    <div class="display-4 text-primary mb-3">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h5 class="card-title">Seguro e Confiável</h5>
-                    <p class="card-text">
-                        Seus dados e de seus clientes estão protegidos com a mais alta segurança.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Stats Section -->
-<div class="stats-section">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-md-3 mb-4">
-                <div class="display-4 fw-bold text-primary">10+</div>
-                <p class="lead">Dias de Teste Grátis</p>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="display-4 fw-bold text-primary">24/7</div>
-                <p class="lead">Disponibilidade</p>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="display-4 fw-bold text-primary">100%</div>
-                <p class="lead">Responsivo</p>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="display-4 fw-bold text-primary">∞</div>
-                <p class="lead">Agendamentos</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Pricing Section -->
-<div class="container my-5" id="planos">
-    <div class="row">
-        <div class="col-12 text-center mb-5">
-            <h2 class="display-5 fw-bold text-primary">Escolha seu plano</h2>
-            <p class="lead text-muted">Comece gratuitamente e evolua conforme sua necessidade</p>
-        </div>
-    </div>
-    
-    <div class="row justify-content-center g-4">
-        <!-- Plano Teste -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card pricing-card h-100">
-                <div class="card-header bg-light text-center py-4">
-                    <h4 class="card-title text-primary">
-                        <i class="fas fa-gift me-2"></i>Teste Grátis
-                    </h4>
-                    <div class="display-4 fw-bold text-dark">R$ 0</div>
-                    <small class="text-muted">por 10 dias</small>
-                </div>
-                <div class="card-body p-4">
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Agendamentos ilimitados
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Gestão de clientes
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Cadastro de serviços
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Suporte por email
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-times text-muted me-2"></i>
-                            Relatórios avançados
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-footer bg-transparent p-4">
-                    <a href="{% url 'accounts:register' %}?plan=trial" class="btn btn-outline-primary btn-lg w-100">
-                        <i class="fas fa-play me-2"></i>Começar Teste
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Plano VIP -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card pricing-card featured h-100 shadow-lg">
-                <div class="card-header bg-primary text-white text-center py-4">
-                    <h4 class="card-title">
-                        <i class="fas fa-crown me-2"></i>Plano VIP
-                    </h4>
-                    <div class="display-4 fw-bold">R$ 29</div>
-                    <small>por 30 dias</small>
-                    <div class="badge bg-warning text-dark mt-2">MAIS POPULAR</div>
-                </div>
-                <div class="card-body p-4">
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            <strong>Tudo do plano teste +</strong>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Relatórios avançados
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Estatísticas detalhadas
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Suporte prioritário
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            Backup automático
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-footer bg-transparent p-4">
-                    <a href="{% url 'accounts:register' %}?plan=vip" class="btn btn-primary btn-lg w-100">
-                        <i class="fas fa-crown me-2"></i>Assinar VIP
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- CTA Section -->
-<div class="container my-5">
-    <div class="row">
-        <div class="col-12">
-            <div class="card bg-primary text-white">
-                <div class="card-body text-center py-5">
-                    <h3 class="card-title display-6 fw-bold mb-4">
-                        Pronto para revolucionar seu salão?
-                    </h3>
-                    <p class="lead mb-4">
-                        Junte-se a centenas de profissionais que já transformaram seus negócios
-                    </p>
-                    <div class="d-flex justify-content-center gap-3 flex-wrap">
-                        <a href="{% url 'accounts:register' %}?plan=trial" class="btn btn-light btn-lg">
-                            <i class="fas fa-gift me-2"></i>Teste 10 Dias Grátis
+                    <div class="hero-buttons">
+                        <a href="#planos" class="btn btn-hero-primary me-3 floating">
+                            <i class="fas fa-rocket me-2"></i>
+                            Começar Revolução
+                            <span class="btn-glow"></span>
                         </a>
-                        <a href="{% url 'accounts:register' %}?plan=vip" class="btn btn-warning btn-lg">
-                            <i class="fas fa-crown me-2"></i>Assinar Plano VIP
+                        <a href="{% url 'accounts:login' %}" class="btn btn-hero-outline">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Já sou do futuro
                         </a>
                     </div>
                 </div>
             </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="floating-card card-1">
+                        <i class="fas fa-calendar-check fa-3x text-primary"></i>
+                        <h6 class="mt-3">Agendamento IA</h6>
+                    </div>
+                    <div class="floating-card card-2">
+                        <i class="fas fa-chart-line fa-3x text-success"></i>
+                        <h6 class="mt-3">Analytics Avançado</h6>
+                    </div>
+                    <div class="floating-card card-3">
+                        <i class="fas fa-mobile-alt fa-3x text-info"></i>
+                        <h6 class="mt-3">App Nativo</h6>
+                    </div>
+                    <div class="hero-decoration">
+                        <div class="decoration-circle circle-1"></div>
+                        <div class="decoration-circle circle-2"></div>
+                        <div class="decoration-circle circle-3"></div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+        <div class="scroll-dot"></div>
+        <div class="scroll-line"></div>
+        <span>Scroll para descobrir</span>
     </div>
 </div>
 
-<!-- Footer -->
-<footer class="bg-dark text-white py-4 mt-5" style="margin: 60px -30px -30px -30px;">
+<!-- Features Section Ultra Modern -->
+<section class="features-section py-5">
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
-                <h5><i class="fas fa-cut me-2"></i>Sistema de Agendamento</h5>
-                <p class="mb-0">A solução completa para seu salão ou barbearia.</p>
-            </div>
-            <div class="col-md-6 text-md-end">
-                <p class="mb-0">
-                    <a href="{% url 'accounts:login' %}" class="text-white text-decoration-none">
-                        <i class="fas fa-sign-in-alt me-1"></i>Já tenho conta
-                    </a>
+            <div class="col-12 text-center mb-5">
+                <div class="section-badge mb-3">
+                    <i class="fas fa-magic me-2"></i>
+                    Recursos Revolucionários
+                </div>
+                <h2 class="section-title gradient-text">
+                    O Futuro dos Agendamentos
+                </h2>
+                <p class="section-subtitle">
+                    Tecnologia de ponta que eleva seu negócio a outro nível
                 </p>
             </div>
         </div>
+        
+        <div class="features-grid">
+            <div class="feature-card-modern" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h5>IA Integrada</h5>
+                <p>Algoritmos inteligentes que otimizam automaticamente seus horários e sugerem melhorias.</p>
+                <div class="feature-tech-stack">
+                    <span class="tech-badge">AI</span>
+                    <span class="tech-badge">ML</span>
+                    <span class="tech-badge">Cloud</span>
+                </div>
+            </div>
+            
+            <div class="feature-card-modern" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h5>Multi-Plataforma</h5>
+                <p>Acesse de qualquer lugar: web, mobile, tablet. Sincronização em tempo real.</p>
+                <div class="feature-tech-stack">
+                    <span class="tech-badge">PWA</span>
+                    <span class="tech-badge">React</span>
+                    <span class="tech-badge">Cloud</span>
+                </div>
+            </div>
+            
+            <div class="feature-card-modern" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-virus"></i>
+                </div>
+                <h5>Ultra Seguro</h5>
+                <p>Criptografia militar, backup em nuvem e compliance total com LGPD.</p>
+                <div class="feature-tech-stack">
+                    <span class="tech-badge">SSL</span>
+                    <span class="tech-badge">Crypto</span>
+                    <span class="tech-badge">LGPD</span>
+                </div>
+            </div>
+            
+            <div class="feature-card-modern" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h5>Performance Extrema</h5>
+                <p>Carregamento instantâneo com tecnologia de cache avançada e CDN global.</p>
+                <div class="feature-tech-stack">
+                    <span class="tech-badge">CDN</span>
+                    <span class="tech-badge">Cache</span>
+                    <span class="tech-badge">Edge</span>
+                </div>
+            </div>
+            
+            <div class="feature-card-modern" data-aos="fade-up" data-aos-delay="500">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h5>Analytics 4.0</h5>
+                <p>Dashboards interativos com insights em tempo real e previsões de IA.</p>
+                <div class="feature-tech-stack">
+                    <span class="tech-badge">BI</span>
+                    <span class="tech-badge">Real-time</span>
+                    <span class="tech-badge">Charts</span>
+                </div>
+            </div>
+            
+            <div class="feature-card-modern" data-aos="fade-up" data-aos-delay="600">
+                <div class="feature-icon">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <h5>Automação Total</h5>
+                <p>Workflows inteligentes que automatizam tarefas repetitivas e aumentam eficiência.</p>
+                <div class="feature-tech-stack">
+                    <span class="tech-badge">Auto</span>
+                    <span class="tech-badge">Flow</span>
+                    <span class="tech-badge">Smart</span>
+                </div>
+            </div>
+        </div>
     </div>
-</footer>
+</section>
+
+<!-- Stats Section Futuristic -->
+<section class="stats-section-modern">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" data-count="99.9">0</div>
+                <div class="stat-unit">%</div>
+                <div class="stat-label">Uptime Garantido</div>
+                <div class="stat-description">Disponibilidade 24/7 com infraestrutura na nuvem</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-count="10">0</div>
+                <div class="stat-unit">x</div>
+                <div class="stat-label">Mais Rápido</div>
+                <div class="stat-description">Performance superior aos concorrentes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-count="500">0</div>
+                <div class="stat-unit">+</div>
+                <div class="stat-label">Salões Conectados</div>
+                <div class="stat-description">Profissionais que já evoluíram</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-count="15">0</div>
+                <div class="stat-unit">dias</div>
+                <div class="stat-label">Teste Premium</div>
+                <div class="stat-description">Período estendido para conhecer tudo</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section Ultra Modern -->
+<section class="pricing-section-modern py-5" id="planos">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <div class="section-badge mb-3">
+                    <i class="fas fa-crown me-2"></i>
+                    Planos Revolucionários
+                </div>
+                <h2 class="section-title gradient-text">
+                    Escolha Sua Evolução
+                </h2>
+                <p class="section-subtitle">
+                    Do teste gratuito ao universo premium - você decide o ritmo
+                </p>
+            </div>
+        </div>
+        
+        <div class="pricing-grid">
+            <!-- Plano Gratuito -->
+            <div class="pricing-card-modern">
+                <div class="pricing-header">
+                    <div class="pricing-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h4>Explorador</h4>
+                    <div class="pricing-price">
+                        <span class="currency">R$</span>
+                        <span class="amount">0</span>
+                        <span class="period">/15 dias</span>
+                    </div>
+                    <p class="pricing-desc">Perfeito para conhecer o futuro</p>
+                </div>
+                
+                <div class="pricing-features">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Agendamentos ilimitados</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Gestão de clientes</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Interface futurista</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Suporte humanizado</span>
+                    </div>
+                    <div class="feature-item disabled">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Analytics avançado</span>
+                    </div>
+                </div>
+                
+                <div class="pricing-footer">
+                    <a href="{% url 'accounts:register' %}?plan=trial" class="btn btn-pricing-outline">
+                        <i class="fas fa-rocket me-2"></i>
+                        Iniciar Exploração
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Plano Premium -->
+            <div class="pricing-card-modern featured">
+                <div class="featured-badge">
+                    <i class="fas fa-crown me-1"></i>
+                    MAIS ESCOLHIDO
+                </div>
+                <div class="pricing-header">
+                    <div class="pricing-icon premium">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h4>Revolucionário</h4>
+                    <div class="pricing-price">
+                        <span class="currency">R$</span>
+                        <span class="amount">29</span>
+                        <span class="period">/mês</span>
+                    </div>
+                    <p class="pricing-desc">Para quem quer dominar o mercado</p>
+                </div>
+                
+                <div class="pricing-features">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Tudo do Explorador +</strong></span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Analytics com IA</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Automação inteligente</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Suporte prioritário 24/7</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Backup automático</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Integrações premium</span>
+                    </div>
+                </div>
+                
+                <div class="pricing-footer">
+                    <a href="{% url 'accounts:register' %}?plan=vip" class="btn btn-pricing-premium pulse-glow">
+                        <i class="fas fa-crown me-2"></i>
+                        Revolucionar Agora
+                        <span class="btn-glow"></span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Plano Enterprise -->
+            <div class="pricing-card-modern">
+                <div class="pricing-header">
+                    <div class="pricing-icon enterprise">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h4>Enterprise</h4>
+                    <div class="pricing-price">
+                        <span class="currency">R$</span>
+                        <span class="amount">∞</span>
+                        <span class="period">/customizado</span>
+                    </div>
+                    <p class="pricing-desc">Solução corporativa personalizada</p>
+                </div>
+                
+                <div class="pricing-features">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Tudo do Revolucionário +</strong></span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Implementação dedicada</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Customizações ilimitadas</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>SLA garantido</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Treinamento presencial</span>
+                    </div>
+                </div>
+                
+                <div class="pricing-footer">
+                    <a href="#" class="btn btn-pricing-outline" onclick="showModernNotification('Entre em contato conosco para soluções Enterprise!', 'info')">
+                        <i class="fas fa-phone me-2"></i>
+                        Falar com Especialista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section Revolutionary -->
+<section class="cta-section-modern">
+    <div class="container">
+        <div class="cta-content">
+            <div class="cta-badge mb-4">
+                <i class="fas fa-rocket me-2"></i>
+                Última Chance
+            </div>
+            <h2 class="cta-title gradient-text mb-4">
+                Não Fique no Passado
+            </h2>
+            <p class="cta-subtitle mb-5">
+                Seus concorrentes já estão evoluindo. 
+                <br>Seja parte da revolução digital agora mesmo.
+            </p>
+            <div class="cta-buttons">
+                <a href="{% url 'accounts:register' %}?plan=trial" class="btn btn-cta-primary me-3 floating">
+                    <i class="fas fa-rocket me-2"></i>
+                    Começar Teste Premium
+                    <span class="btn-glow"></span>
+                </a>
+                <a href="{% url 'accounts:register' %}?plan=vip" class="btn btn-cta-secondary">
+                    <i class="fas fa-crown me-2"></i>
+                    Ir Direto ao Premium
+                </a>
+            </div>
+            
+            <div class="cta-stats mt-5">
+                <div class="cta-stat">
+                    <div class="stat-number">+500</div>
+                    <div class="stat-label">Salões Revolucionados</div>
+                </div>
+                <div class="cta-stat">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Satisfação</div>
+                </div>
+                <div class="cta-stat">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Suporte Premium</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Background Animation -->
+    <div class="cta-background">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+    </div>
+</section>
+
+<style>
+/* Ultra Modern Styles */
+.hero-section {
+    background: var(--bg-primary);
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.badge-glow, .section-badge, .cta-badge, .featured-badge {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    padding: var(--space-sm) var(--space-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-light);
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-title {
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: var(--space-xl);
+}
+
+.hero-subtitle {
+    font-size: var(--font-size-xl);
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    max-width: 500px;
+}
+
+.btn-hero-primary, .btn-cta-primary {
+    background: var(--success-gradient);
+    border: none;
+    padding: var(--space-lg) var(--space-2xl);
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+    color: white;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-bounce);
+    box-shadow: 0 15px 50px rgba(67, 233, 123, 0.4);
+}
+
+.btn-hero-primary:hover, .btn-cta-primary:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 25px 80px rgba(67, 233, 123, 0.6);
+    color: white;
+}
+
+.btn-hero-outline, .btn-cta-secondary {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: var(--space-lg) var(--space-2xl);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: all var(--transition-base);
+    backdrop-filter: blur(10px);
+}
+
+.btn-hero-outline:hover, .btn-cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.hero-visual {
+    position: relative;
+    height: 600px;
+}
+
+.floating-card {
+    position: absolute;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    text-align: center;
+    color: white;
+    box-shadow: var(--shadow-glass);
+    animation: float 6s ease-in-out infinite;
+}
+
+.floating-card.card-1 {
+    top: 10%;
+    right: 20%;
+    animation-delay: 0s;
+}
+
+.floating-card.card-2 {
+    top: 50%;
+    right: 0%;
+    animation-delay: 2s;
+}
+
+.floating-card.card-3 {
+    bottom: 20%;
+    right: 30%;
+    animation-delay: 4s;
+}
+
+.hero-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.decoration-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    animation: rotate 20s linear infinite;
+}
+
+.circle-1 {
+    width: 200px;
+    height: 200px;
+    top: 10%;
+    left: 10%;
+}
+
+.circle-2 {
+    width: 150px;
+    height: 150px;
+    bottom: 20%;
+    left: 20%;
+    animation-duration: 25s;
+    animation-direction: reverse;
+}
+
+.circle-3 {
+    width: 100px;
+    height: 100px;
+    top: 60%;
+    left: 5%;
+    animation-duration: 15s;
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: var(--font-size-sm);
+}
+
+.scroll-dot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    margin: 0 auto var(--space-sm);
+    animation: pulse 2s infinite;
+}
+
+.scroll-line {
+    width: 1px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.3);
+    margin: 0 auto var(--space-sm);
+}
+
+.features-section {
+    padding: var(--space-3xl) 0;
+    background: var(--bg-secondary);
+}
+
+.section-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    margin-bottom: var(--space-lg);
+}
+
+.section-subtitle {
+    font-size: var(--font-size-xl);
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--space-2xl);
+    margin-top: var(--space-3xl);
+}
+
+.feature-card-modern {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-2xl);
+    text-align: center;
+    transition: all var(--transition-bounce);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-gradient);
+    transform: scaleX(0);
+    transition: transform var(--transition-base);
+}
+
+.feature-card-modern:hover::before {
+    transform: scaleX(1);
+}
+
+.feature-card-modern:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 30px 80px rgba(79, 172, 254, 0.2);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-lg);
+    font-size: 2rem;
+    color: white;
+    box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+}
+
+.feature-tech-stack {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+    margin-top: var(--space-lg);
+}
+
+.tech-badge {
+    background: var(--primary-gradient);
+    color: white;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.stats-section-modern {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    margin: var(--space-3xl) 0;
+    padding: var(--space-3xl) 0;
+    border-radius: var(--radius-2xl);
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-2xl);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+.stat-card {
+    text-align: center;
+    padding: var(--space-xl);
+}
+
+.stat-number {
+    font-size: 4rem;
+    font-weight: 900;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.stat-unit {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-left: var(--space-sm);
+}
+
+.stat-label {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: var(--space-md) 0;
+}
+
+.stat-description {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.pricing-section-modern {
+    background: var(--bg-secondary);
+    padding: var(--space-3xl) 0;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--space-2xl);
+    margin-top: var(--space-3xl);
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.pricing-card-modern {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-2xl);
+    transition: all var(--transition-bounce);
+    position: relative;
+    overflow: hidden;
+}
+
+.pricing-card-modern.featured {
+    border-color: #667eea;
+    transform: scale(1.05);
+    box-shadow: 0 25px 80px rgba(102, 126, 234, 0.3);
+}
+
+.featured-badge {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--warning-gradient);
+    color: white;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.pricing-header {
+    text-align: center;
+    margin-bottom: var(--space-2xl);
+}
+
+.pricing-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-lg);
+    font-size: 1.5rem;
+    color: white;
+}
+
+.pricing-icon.premium {
+    background: var(--warning-gradient);
+}
+
+.pricing-icon.enterprise {
+    background: var(--secondary-gradient);
+}
+
+.pricing-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin: var(--space-lg) 0;
+}
+
+.currency {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+}
+
+.amount {
+    font-size: 4rem;
+    font-weight: 900;
+    margin: 0 var(--space-sm);
+}
+
+.period {
+    font-size: var(--font-size-base);
+    color: var(--text-secondary);
+}
+
+.pricing-features {
+    margin-bottom: var(--space-2xl);
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.feature-item.disabled {
+    opacity: 0.5;
+}
+
+.feature-item i {
+    font-size: var(--font-size-lg);
+}
+
+.fa-check-circle {
+    color: #43e97b;
+}
+
+.fa-times-circle {
+    color: #ff9a9e;
+}
+
+.btn-pricing-outline {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: var(--space-lg) var(--space-2xl);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition-base);
+    display: block;
+    text-align: center;
+}
+
+.btn-pricing-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-pricing-premium {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    padding: var(--space-lg) var(--space-2xl);
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    text-decoration: none;
+    transition: all var(--transition-bounce);
+    display: block;
+    text-align: center;
+    box-shadow: 0 15px 50px rgba(102, 126, 234, 0.4);
+}
+
+.btn-pricing-premium:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.6);
+    color: white;
+}
+
+.cta-section-modern {
+    background: var(--bg-primary);
+    padding: var(--space-3xl) 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cta-title {
+    font-size: clamp(3rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+}
+
+.cta-subtitle {
+    font-size: var(--font-size-xl);
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+}
+
+.cta-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-xl);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.cta-stat {
+    text-align: center;
+}
+
+.cta-stat .stat-number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: white;
+    margin-bottom: var(--space-sm);
+}
+
+.cta-stat .stat-label {
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cta-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.floating-shape {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite;
+}
+
+.shape-1 {
+    width: 200px;
+    height: 200px;
+    top: 10%;
+    left: 10%;
+}
+
+.shape-2 {
+    width: 150px;
+    height: 150px;
+    bottom: 20%;
+    right: 15%;
+    animation-delay: 3s;
+    animation-duration: 12s;
+}
+
+.shape-3 {
+    width: 100px;
+    height: 100px;
+    top: 50%;
+    right: 20%;
+    animation-delay: 6s;
+    animation-duration: 10s;
+}
+
+.btn-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    border-radius: inherit;
+    filter: blur(15px);
+    opacity: 0.5;
+    z-index: -1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-visual {
+        height: 400px;
+        margin-top: var(--space-2xl);
+    }
+    
+    .floating-card {
+        padding: var(--space-lg);
+        font-size: var(--font-size-sm);
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+    }
+    
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+    }
+    
+    .pricing-card-modern.featured {
+        transform: none;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-lg);
+    }
+    
+    .cta-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-lg);
+    }
+}
+
+/* Counter Animation */
+@keyframes countUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.stat-number {
+    animation: countUp 0.6s ease-out;
+}
+</style>
 
 <script>
-    // Smooth scroll para âncoras
+// Animated counters for stats
+function animateCounters() {
+    const counters = document.querySelectorAll('[data-count]');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = parseFloat(counter.dataset.count);
+                const increment = target / 100;
+                let current = 0;
+                
+                const updateCounter = () => {
+                    if (current < target) {
+                        current += increment;
+                        counter.textContent = Math.ceil(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                
+                updateCounter();
+                observer.unobserve(counter);
+            }
+        });
+    });
+    
+    counters.forEach(counter => observer.observe(counter));
+}
+
+// Initialize animations when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    animateCounters();
+    
+    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         });
     });
+});
 </script>
 {% endblock %}
-
